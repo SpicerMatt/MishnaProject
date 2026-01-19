@@ -746,7 +746,37 @@
                 Object.keys(MISHNA_STRUCTURE).forEach(seder => {
                     const el = document.createElement('div');
                     el.className = 'grid-item';
-                    el.innerHTML = `<div class="grid-item-title">${seder}</div>`;
+
+                    // Check if seder is fully learned
+                    let isSederCompleted = true;
+                    for (const masechet in MISHNA_STRUCTURE[seder]) {
+                        const chapters = MISHNA_STRUCTURE[seder][masechet].length;
+                        for (let c = 1; c <= chapters; c++) {
+                            const count = getChapterCount(masechet, c);
+                            const chapterId = `${masechet}-${c}`;
+                            for (let m = 1; m <= count; m++) {
+                                if (!state.progress[`${chapterId}-${m}`]) {
+                                    isSederCompleted = false;
+                                    break;
+                                }
+                            }
+                            if (!isSederCompleted) break;
+                        }
+                        if (!isSederCompleted) break;
+                    }
+
+                    if (isSederCompleted) el.classList.add('completed');
+
+                    // Mark All Button
+                    const btn = document.createElement('button');
+                    btn.className = 'mark-all-btn';
+                    btn.innerHTML = '✓';
+                    btn.title = 'סמן סדר כהושלם';
+                    btn.onclick = (e) => { e.stopPropagation(); markSeder(seder); };
+
+                    el.innerHTML = `<div class="grid-item-title">${seder}</div>
+                                    <div class="grid-item-subtitle">${Object.keys(MISHNA_STRUCTURE[seder]).length} מסכתות</div>`;
+                    el.appendChild(btn);
                     el.onclick = () => navigateTo([seder]);
                     grid.appendChild(el);
                 });
@@ -928,6 +958,47 @@
                         state.progress[`${chapterId}-${m}`] = true;
                     } else {
                         delete state.progress[`${chapterId}-${m}`];
+                    }
+                }
+            }
+
+            if (!allMarked) triggerConfetti();
+            saveData();
+            renderStudyView();
+        }
+
+        function markSeder(seder) {
+            let allMarked = true;
+
+            // Check if all are marked
+            for (const masechet in MISHNA_STRUCTURE[seder]) {
+                const chapters = MISHNA_STRUCTURE[seder][masechet].length;
+                for (let c = 1; c <= chapters; c++) {
+                    const count = getChapterCount(masechet, c);
+                    const chapterId = `${masechet}-${c}`;
+                    for (let m = 1; m <= count; m++) {
+                        if (!state.progress[`${chapterId}-${m}`]) {
+                            allMarked = false;
+                            break;
+                        }
+                    }
+                    if (!allMarked) break;
+                }
+                if (!allMarked) break;
+            }
+
+            // Toggle
+            for (const masechet in MISHNA_STRUCTURE[seder]) {
+                const chapters = MISHNA_STRUCTURE[seder][masechet].length;
+                for (let c = 1; c <= chapters; c++) {
+                    const count = getChapterCount(masechet, c);
+                    const chapterId = `${masechet}-${c}`;
+                    for (let m = 1; m <= count; m++) {
+                        if (!allMarked) {
+                            state.progress[`${chapterId}-${m}`] = true;
+                        } else {
+                            delete state.progress[`${chapterId}-${m}`];
+                        }
                     }
                 }
             }
