@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>המשנה שלי - מעקב יומי</title>
+    <meta name="theme-color" content="#4A90E2">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --secondary: #50E3C2;
+            --accent: #FFD700;
+            --bg: #F0F4F8;
+            --card-bg: #FFFFFF;
+            --text: #333333;
+            --text-light: #7F8C8D;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --radius: 20px;
+            --font: 'Rubik', sans-serif;
+            --success: #48C774;
+        }
+
+        [data-theme="dark"] {
+            --primary: #5D9CEC;
+            --secondary: #48C774;
+            --accent: #FFCE54;
+            --bg: #1A1A2E;
+            --card-bg: #16213E;
+            --text: #E0E0E0;
+            --text-light: #A0A0A0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font);
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+            overflow-x: hidden;
+            padding-bottom: 80px;
+            /* Space for nav */
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), #357ABD);
+            color: white;
+            padding: 20px;
+            border-radius: 0 0 30px 30px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: rgba(74, 144, 226, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        [data-theme="dark"] .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .progress-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+        }
+
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
+            transition: transform 0.2s, background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: #005c4b;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            box-shadow: none;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 12px;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .btn-icon {
+            padding: 8px;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+        }
+
+        /* Navigation Grid */
+        .grid-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+        }
+
+        .grid-item {
+            background: var(--card-bg);
+            border: 2px solid transparent;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px;
+            position: relative;
+        }
+
+        .grid-item:active {
+            transform: scale(0.95);
+        }
+
+        .grid-item.completed {
+            border-color: var(--success);
+            background: rgba(72, 199, 116, 0.1);
+        }
+
+        .grid-item-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .grid-item-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .mark-all-btn {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ddd;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--success);
+            font-size: 1.2rem;
+            z-index: 20;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+        }
+
+        .mark-all-btn:hover {
+            background: var(--success);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .mark-all-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Mishna Buttons */
+        .mishna-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .mishna-btn {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            border: 2px solid #ddd;
+            background: var(--card-bg);
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .mishna-btn.learned {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+        }
+
+        /* Breadcrumbs */
+        .breadcrumbs {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 5px;
+        }
+
+        .breadcrumb-item {
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb-item.active {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .breadcrumb-separator {
+            color: #ccc;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 2px solid #ddd;
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        [data-theme="dark"] input {
+            border-color: #444;
+        }
+
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            border-radius: 30px 30px 0 0;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .nav-item {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: color 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Toggle Switch */
+        .theme-switch {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Confetti */
+        canvas#confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <button class="theme-switch" onclick="toggleTheme()">🌙</button>
+        <h1>המשנה שלי</h1>
+        <div style="width: 24px;"></div>
+    </header>
+
+    <div class="container" id="app">
+        <!-- Dashboard Section -->
+        <section id="dashboard">
+            <div class="card">
+                <div class="progress-container">
+                    <svg class="progress-ring" width="150" height="150">
+                        <circle class="progress-ring__circle-bg" stroke="#e6e6e6" stroke-width="12" fill="transparent"
+                            r="60" cx="75" cy="75" />
+                        <circle class="progress-ring__circle" stroke="var(--primary)" stroke-width="12"
+                            fill="transparent" r="60" cx="75" cy="75" />
+                    </svg>
+                    <div
+                        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                        <div id="percent-display" style="font-size: 1.5rem; font-weight: bold;">0%</div>
+                        <div style="font-size: 0.8rem; color: var(--text-light);">הושלם</div>
+                    </div>
+                </div>
+
+                <div class="stat-grid">
+                    <div class="stat-box">
+                        <div class="stat-value" id="remaining-chapters">0</div>
+                        <div class="stat-label">פרקים נותרו</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="days-left">0</div>
+                        <div class="stat-label">ימים לסיום</div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 10px;">
+                    <span style="color: var(--text-light);">תאריך סיום משוער:</span>
+                    <strong id="estimated-date" style="color: var(--primary);">--/--/----</strong>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>הלימוד היומי</h3>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                    <span>יעד יומי (פרקים):</span>
+                    <strong id="daily-goal-display" style="font-size: 1.2rem;">0</strong>
+                </div>
+                <button class="btn btn-secondary btn-block" onclick="switchTab('study')">
+                    <span>📖</span> עבור ללימוד
+                </button>
+            </div>
+        </section>
+
+        <!-- Study Navigation Section -->
+        <section id="study" class="hidden">
+            <div class="breadcrumbs" id="breadcrumbs">
+                <!-- Dynamic Breadcrumbs -->
+            </div>
+
+            <div id="study-content">
+                <!-- Dynamic Content (Sedarim / Masechtot / Chapters / Mishnayot) -->
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settings" class="hidden">
+            <div class="card">
+                <h3>הגדרות לימוד</h3>
+
+                <label>שיטת חישוב:</label>
+                <select id="calc-method" onchange="toggleCalcMethod()">
+                    <option value="rate">לפי קצב יומי (פרקים)</option>
+                    <option value="date">לפי תאריך יעד</option>
+                </select>
+
+                <div id="rate-input-group">
+                    <label>פרקים ליום</label>
+                    <input type="number" id="daily-rate-input" placeholder="למשל 2">
+                </div>
+
+                <div id="date-input-group" class="hidden">
+                    <label>תאריך יעד לסיום</label>
+                    <input type="date" id="target-date-input">
+                </div>
+
+                <button class="btn btn-block" onclick="saveSettings()">שמור הגדרות</button>
+            </div>
+
+            <div class="card">
+                <h3>ניהול נתונים</h3>
+                <button class="btn btn-outline btn-block" onclick="exportData()" style="margin-bottom: 10px;">ייצא
+                    נתונים (JSON)</button>
+                <button class="btn btn-outline btn-block" onclick="document.getElementById('import-file').click()">ייבא
+                    נתונים</button>
+                <input type="file" id="import-file" style="display: none;" onchange="importData(this)">
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn btn-outline" style="color: red; border-color: red;" onclick="resetProgress()">אפס
+                        התקדמות</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav-bar">
+        <div class="nav-item active" onclick="switchTab('dashboard')">
+            <span>🏠</span>
+            <span class="nav-label">בית</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('study')">
+            <span>📖</span>
+            <span class="nav-label">לימוד</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('settings')">
+            <span>⚙️</span>
+            <span class="nav-label">הגדרות</span>
+        </div>
+    </nav>
+
+    <canvas id="confetti"></canvas>
+
+    <script>
+        // --- Data Structure ---
+        const MISHNA_STRUCTURE = {
+            "זרעים": {
+                "ברכות": [5, 8, 6, 7, 5, 8, 5, 8, 5],
+                "פאה": [6, 8, 8, 11, 8, 11, 8, 9],
+                "דמאי": [4, 5, 6, 7, 11, 12, 8],
+                "כלאיים": [9, 11, 7, 9, 8, 9, 8, 6, 10],
+                "שביעית": [8, 10, 10, 10, 9, 6, 7, 11, 9, 9],
+                "תרומות": [10, 6, 9, 13, 9, 6, 7, 12, 7, 12, 10],
+                "מעשרות": [8, 8, 10, 6, 8],
+                "מעשר שני": [7, 10, 13, 12, 15],
+                "חלה": [9, 8, 10, 11],
+                "ערלה": [9, 17, 9],
+                "ביכורים": [11, 11, 12, 5]
+            },
+            "מועד": {
+                "שבת": [11, 7, 6, 2, 4, 10, 4, 7, 7, 6, 6, 6, 7, 4, 3, 8, 8, 3, 6, 5, 3, 6, 5, 5],
+                "עירובין": [10, 6, 9, 11, 9, 10, 11, 11, 4, 15],
+                "פסחים": [7, 8, 8, 9, 10, 6, 13, 8, 11, 9],
+                "שקלים": [7, 5, 4, 9, 6, 6, 7, 8],
+                "יומא": [8, 7, 11, 6, 7, 8, 5, 9],
+                "סוכה": [11, 9, 15, 10, 8],
+                "ביצה": [10, 10, 8, 7, 7],
+                "ראש השנה": [9, 9, 8, 9],
+                "תענית": [7, 10, 9, 8],
+                "מגילה": [11, 6, 6, 10],
+                "מועד קטן": [10, 5, 9],
+                "חגיגה": [8, 7, 8]
+            },
+            "נשים": {
+                "יבמות": [4, 10, 10, 13, 6, 6, 6, 6, 6, 9, 7, 6, 13, 9, 10, 7],
+                "כתובות": [10, 10, 9, 12, 9, 7, 10, 8, 9, 6, 6, 4, 11],
+                "נדרים": [4, 5, 11, 8, 6, 10, 9, 7, 10, 8, 12],
+                "נזיר": [7, 10, 7, 7, 7, 11, 4, 2, 5],
+                "סוטה": [9, 6, 8, 5, 5, 4, 8, 7, 15],
+                "גיטין": [6, 7, 8, 9, 9, 7, 9, 10, 10],
+                "קידושין": [10, 10, 13, 14]
+            },
+            "נזיקין": {
+                "בבא קמא": [4, 6, 11, 9, 7, 6, 7, 7, 12, 10],
+                "בבא מציעא": [8, 11, 12, 12, 11, 8, 11, 9, 13, 6],
+                "בבא בתרא": [6, 14, 8, 9, 11, 8, 4, 8, 10, 8],
+                "סנהדרין": [6, 5, 8, 5, 5, 6, 11, 7, 6, 6, 6],
+                "מכות": [10, 8, 16],
+                "שבועות": [7, 5, 11, 13, 5, 7, 8, 6],
+                "עדיות": [14, 10, 12, 12, 7, 3, 9, 7],
+                "עבודה זרה": [9, 7, 10, 12, 12],
+                "אבות": [18, 16, 18, 22, 23, 11],
+                "הוריות": [5, 7, 8]
+            },
+            "קדשים": {
+                "זבחים": [4, 5, 6, 6, 8, 7, 6, 12, 7, 8, 8, 6, 8, 10],
+                "מנחות": [4, 5, 7, 5, 9, 7, 6, 7, 9, 9, 9, 5, 11],
+                "חולין": [7, 10, 7, 7, 5, 7, 6, 6, 8, 4, 2, 5],
+                "בכורות": [7, 9, 4, 10, 6, 12, 7, 10, 8],
+                "ערכין": [4, 6, 5, 4, 6, 5, 5, 7, 8],
+                "תמורה": [6, 3, 5, 4, 6, 5, 6],
+                "כריתות": [7, 6, 10, 3, 8, 9],
+                "מעילה": [4, 9, 8, 6, 5, 6],
+                "תמיד": [4, 5, 9, 3, 6, 3, 4],
+                "מידות": [9, 6, 8, 7, 4],
+                "קינים": [4, 5, 6]
+            },
+            "טהרות": {
+                "כלים": [9, 8, 8, 4, 11, 4, 6, 11, 8, 8, 9, 8, 8, 8, 6, 8, 17, 9, 10, 7, 3, 10, 5, 17, 9, 9, 12, 10, 8, 4],
+                "אהלות": [8, 7, 7, 3, 7, 7, 6, 6, 16, 7, 9, 8, 6, 7, 10, 5, 5, 10],
+                "נגעים": [6, 5, 8, 11, 5, 8, 5, 10, 3, 10, 12, 7, 12, 13],
+                "פרה": [4, 5, 11, 4, 9, 5, 12, 11, 9, 6, 9, 11],
+                "טהרות": [9, 8, 8, 13, 9, 10, 9, 9, 9, 8],
+                "מקואות": [8, 10, 4, 5, 6, 11, 7, 5, 7, 8],
+                "נידה": [7, 7, 7, 7, 9, 14, 5, 4, 11, 8],
+                "מכשירים": [6, 11, 8, 10, 11, 8],
+                "זבים": [6, 4, 3, 7, 12],
+                "טבול יום": [5, 8, 6, 7],
+                "ידיים": [5, 4, 5, 8],
+                "עוקצין": [6, 10, 12]
+            }
+        };
+
+        // --- State Management ---
+        let state = {
+            progress: {}, // { "masechet-chapter-mishna": true }
+            customCounts: {}, // { "masechet-chapter": 15 } - Kept for backward compatibility but mostly unused
+            dailyRate: 2, // Chapters per day
+            targetDate: null,
+            calcMethod: 'rate',
+            theme: 'light',
+            currentPath: [] // [Seder, Masechet, Chapter]
+        };
+
+        // --- Initialization ---
+        function init() {
+            loadState();
+            setupPWA();
+            render();
+            renderStudyView();
+
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('target-date-input').min = today;
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('mishnaTrackerDataV2');
+            if (saved) {
+                state = { ...state, ...JSON.parse(saved) };
+            }
+            applyTheme();
+        }
+
+        function saveData() {
+            localStorage.setItem('mishnaTrackerDataV2', JSON.stringify(state));
+            render(); // Update dashboard stats
+        }
+
+        // --- Core Logic ---
+        function getChapterCount(masechet, chapter) {
+            // Find the seder for this masechet
+            for (const seder in MISHNA_STRUCTURE) {
+                if (MISHNA_STRUCTURE[seder][masechet]) {
+                    // Array is 0-indexed, so chapter 1 is at index 0
+                    return MISHNA_STRUCTURE[seder][masechet][chapter - 1] || 0;
+                }
+            }
+            return 0;
+        }
+
+        function getStats() {
+            let totalChapters = 0;
+            let completedChapters = 0;
+
+            for (const seder in MISHNA_STRUCTURE) {
+                for (const masechet in MISHNA_STRUCTURE[seder]) {
+                    const chapters = MISHNA_STRUCTURE[seder][masechet].length;
+                    totalChapters += chapters;
+
+                    for (let c = 1; c <= chapters; c++) {
+                        const count = getChapterCount(masechet, c);
+                        const chapterId = `${masechet}-${c}`;
+                        let learnedCount = 0;
+                        for (let m = 1; m <= count; m++) {
+                            if (state.progress[`${chapterId}-${m}`]) learnedCount++;
+                        }
+                        if (learnedCount === count && count > 0) completedChapters++;
+                    }
+                }
+            }
+
+            const remaining = totalChapters - completedChapters;
+            let rate = state.dailyRate;
+            let daysLeft = 0;
+            let estimatedDate = new Date();
+
+            if (state.calcMethod === 'date' && state.targetDate) {
+                const target = new Date(state.targetDate);
+                const today = new Date();
+                const diffTime = Math.max(0, target - today);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                daysLeft = diffDays;
+                rate = diffDays > 0 ? Math.ceil(remaining / diffDays) : remaining;
+            } else {
+                daysLeft = rate > 0 ? Math.ceil(remaining / rate) : 0;
+                estimatedDate.setDate(estimatedDate.getDate() + daysLeft);
+            }
+
+            return { total: totalChapters, completed: completedChapters, remaining, rate, daysLeft, estimatedDate };
+        }
+
+        // --- UI Rendering ---
+        function render() {
+            const stats = getStats();
+
+            // Progress Ring
+            const circle = document.querySelector('.progress-ring__circle');
+            const radius = circle.r.baseVal.value;
+            const circumference = radius * 2 * Math.PI;
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+
+            const percent = stats.total > 0 ? (stats.completed / stats.total) : 0;
+            const offset = circumference - (percent * circumference);
+            circle.style.strokeDashoffset = offset;
+
+            document.getElementById('percent-display').textContent = `${Math.round(percent * 100)}%`;
+
+            // Stats
+            document.getElementById('remaining-chapters').textContent = stats.remaining;
+            document.getElementById('days-left').textContent = stats.daysLeft;
+
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            document.getElementById('estimated-date').textContent = state.calcMethod === 'date' && state.targetDate
+                ? new Date(state.targetDate).toLocaleDateString('he-IL', options)
+                : stats.estimatedDate.toLocaleDateString('he-IL', options);
+
+            document.getElementById('daily-goal-display').textContent =
+                state.calcMethod === 'date' ? stats.rate : state.dailyRate;
+
+            // Settings Inputs
+            document.getElementById('daily-rate-input').value = state.dailyRate;
+            document.getElementById('target-date-input').value = state.targetDate || '';
+            document.getElementById('calc-method').value = state.calcMethod;
+            toggleCalcMethod();
+        }
+
+        // --- Navigation Logic ---
+        function renderStudyView() {
+            const content = document.getElementById('study-content');
+            const breadcrumbs = document.getElementById('breadcrumbs');
+            content.innerHTML = '';
+            breadcrumbs.innerHTML = '';
+
+            // Breadcrumbs
+            const homeCrumb = document.createElement('span');
+            homeCrumb.className = 'breadcrumb-item';
+            homeCrumb.textContent = 'ראשי';
+            homeCrumb.onclick = () => navigateTo([]);
+            breadcrumbs.appendChild(homeCrumb);
+
+            state.currentPath.forEach((item, index) => {
+                const sep = document.createElement('span');
+                sep.className = 'breadcrumb-separator';
+                sep.textContent = ' / ';
+                breadcrumbs.appendChild(sep);
+
+                const crumb = document.createElement('span');
+                crumb.className = 'breadcrumb-item';
+                crumb.textContent = item;
+                if (index === state.currentPath.length - 1) crumb.classList.add('active');
+                crumb.onclick = () => navigateTo(state.currentPath.slice(0, index + 1));
+                breadcrumbs.appendChild(crumb);
+            });
+
+            // Content
+            if (state.currentPath.length === 0) {
+                // Show Sedarim
+                const grid = document.createElement('div');
+                grid.className = 'grid-menu';
+                Object.keys(MISHNA_STRUCTURE).forEach(seder => {
+                    const el = document.createElement('div');
+                    el.className = 'grid-item';
+                    el.innerHTML = `<div class="grid-item-title">${seder}</div>`;
+                    el.onclick = () => navigateTo([seder]);
+                    grid.appendChild(el);
+                });
+                content.appendChild(grid);
+            } else if (state.currentPath.length === 1) {
+                // Show Masechtot
+                const seder = state.currentPath[0];
+                const grid = document.createElement('div');
+                grid.className = 'grid-menu';
+                Object.keys(MISHNA_STRUCTURE[seder]).forEach(masechet => {
+                    const chapters = MISHNA_STRUCTURE[seder][masechet].length;
+                    const el = document.createElement('div');
+                    el.className = 'grid-item';
+
+                    // Mark All Button
+                    const btn = document.createElement('button');
+                    btn.className = 'mark-all-btn';
+                    btn.innerHTML = '✓';
+                    btn.title = 'סמן מסכת כהושלמה';
+                    btn.onclick = (e) => { e.stopPropagation(); markMasechet(seder, masechet); };
+
+                    el.innerHTML = `
+                    <div class="grid-item-title">${masechet}</div>
+                    <div class="grid-item-subtitle">${chapters} פרקים</div>
+                `;
+                    el.appendChild(btn);
+                    el.onclick = () => navigateTo([seder, masechet]);
+                    grid.appendChild(el);
+                });
+                content.appendChild(grid);
+            } else if (state.currentPath.length === 2) {
+                // Show Chapters
+                const [seder, masechet] = state.currentPath;
+                const chapters = MISHNA_STRUCTURE[seder][masechet].length;
+                const grid = document.createElement('div');
+                grid.className = 'grid-menu';
+
+                for (let i = 1; i <= chapters; i++) {
+                    const el = document.createElement('div');
+                    el.className = 'grid-item';
+
+                    // Check if chapter is fully learned
+                    const chapterId = `${masechet}-${i}`;
+                    const count = getChapterCount(masechet, i);
+                    let learnedCount = 0;
+                    for (let m = 1; m <= count; m++) {
+                        if (state.progress[`${chapterId}-${m}`]) learnedCount++;
+                    }
+                    if (learnedCount === count && count > 0) el.classList.add('completed');
+
+                    // Mark All Button
+                    const btn = document.createElement('button');
+                    btn.className = 'mark-all-btn';
+                    btn.innerHTML = '✓';
+                    btn.title = 'סמן פרק כהושלם';
+                    btn.onclick = (e) => { e.stopPropagation(); markChapter(masechet, i); };
+
+                    el.innerHTML = `
+                    <div class="grid-item-title">פרק ${toHebrewNumeral(i)}</div>
+                    <div class="grid-item-subtitle">${learnedCount}/${count} משניות</div>
+                    <div class="grid-item-subtitle" style="font-size: 0.7rem; opacity: 0.7;">פרק ${i}</div>
+                `;
+                    el.appendChild(btn);
+                    el.onclick = () => navigateTo([seder, masechet, i]);
+                    grid.appendChild(el);
+                }
+                content.appendChild(grid);
+            } else if (state.currentPath.length === 3) {
+                // Show Mishnayot
+                const [seder, masechet, chapter] = state.currentPath;
+                const chapterId = `${masechet}-${chapter}`;
+                const count = getChapterCount(masechet, chapter);
+
+                // Controls
+                const controls = document.createElement('div');
+                controls.style.display = 'flex';
+                controls.style.gap = '10px';
+                controls.style.marginBottom = '15px';
+
+                const markAllBtn = document.createElement('button');
+                markAllBtn.className = 'btn btn-sm';
+                markAllBtn.textContent = '✅ סמן הכל';
+                markAllBtn.onclick = () => markChapter(masechet, chapter);
+
+                controls.appendChild(markAllBtn);
+                content.appendChild(controls);
+
+                // Grid
+                const grid = document.createElement('div');
+                grid.className = 'mishna-grid';
+
+                for (let i = 1; i <= count; i++) {
+                    const btn = document.createElement('div');
+                    btn.className = 'mishna-btn';
+                    const mishnaId = `${chapterId}-${i}`;
+                    if (state.progress[mishnaId]) btn.classList.add('learned');
+
+                    btn.textContent = toHebrewNumeral(i);
+                    btn.onclick = () => toggleMishna(mishnaId);
+                    grid.appendChild(btn);
+                }
+                content.appendChild(grid);
+            }
+        }
+
+        function navigateTo(path) {
+            state.currentPath = path;
+            renderStudyView();
+        }
+
+        function toggleMishna(id) {
+            if (state.progress[id]) {
+                delete state.progress[id];
+            } else {
+                state.progress[id] = true;
+                triggerConfetti();
+            }
+            saveData();
+            renderStudyView(); // Re-render to show state
+        }
+
+        function markChapter(masechet, chapter) {
+            const chapterId = `${masechet}-${chapter}`;
+            const count = getChapterCount(masechet, chapter);
+            let allMarked = true;
+            for (let i = 1; i <= count; i++) {
+                if (!state.progress[`${chapterId}-${i}`]) allMarked = false;
+            }
+
+            if (allMarked) {
+                if (!confirm(`האם לבטל את הסימון של פרק ${chapter}?`)) return;
+            }
+
+            for (let i = 1; i <= count; i++) {
+                if (!allMarked) state.progress[`${chapterId}-${i}`] = true;
+                else delete state.progress[`${chapterId}-${i}`];
+            }
+
+            if (!allMarked) triggerConfetti();
+            saveData();
+            renderStudyView();
+        }
+
+        function markMasechet(seder, masechet) {
+            if (!confirm(`האם לסמן את כל מסכת ${masechet} כהושלמה?`)) return;
+
+            const chapters = MISHNA_STRUCTURE[seder][masechet].length;
+            for (let c = 1; c <= chapters; c++) {
+                const count = getChapterCount(masechet, c);
+                const chapterId = `${masechet}-${c}`;
+                for (let m = 1; m <= count; m++) {
+                    state.progress[`${chapterId}-${m}`] = true;
+                }
+            }
+            triggerConfetti();
+            saveData();
+            renderStudyView();
+        }
+
+        function editMishnaCount(chapterId, currentCount) {
+            // Deprecated but kept for safety
+            const newCount = prompt('כמה משניות יש בפרק זה?', currentCount);
+            if (newCount && !isNaN(newCount) && newCount > 0) {
+                state.customCounts[chapterId] = parseInt(newCount);
+                saveData();
+                renderStudyView();
+            }
+        }
+
+        function toHebrewNumeral(num) {
+            const gematria = ["", "א", "ב", "ג", "ד", "ה", "ו", "ז", "ח", "ט", "י", "יא", "יב", "יג", "יד", "טו", "טז", "יז", "יח", "יט", "כ", "כא", "כב", "כג", "כד", "כה", "כו", "כז", "כח", "כט", "ל"];
+            return gematria[num] || num;
+        }
+
+        // --- Actions ---
+        function switchTab(tabId) {
+            document.querySelectorAll('section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if (tabId === 'dashboard') document.querySelectorAll('.nav-item')[0].classList.add('active');
+            if (tabId === 'study') document.querySelectorAll('.nav-item')[1].classList.add('active');
+            if (tabId === 'settings') document.querySelectorAll('.nav-item')[2].classList.add('active');
+        }
+
+        function toggleCalcMethod() {
+            const method = document.getElementById('calc-method').value;
+            if (method === 'rate') {
+                document.getElementById('rate-input-group').classList.remove('hidden');
+                document.getElementById('date-input-group').classList.add('hidden');
+            } else {
+                document.getElementById('rate-input-group').classList.add('hidden');
+                document.getElementById('date-input-group').classList.remove('hidden');
+            }
+        }
+
+        function saveSettings() {
+            state.calcMethod = document.getElementById('calc-method').value;
+            state.dailyRate = parseInt(document.getElementById('daily-rate-input').value) || 2;
+            state.targetDate = document.getElementById('target-date-input').value;
+
+            saveData();
+            switchTab('dashboard');
+            alert('ההגדרות נשמרו בהצלחה!');
+        }
+
+        function resetProgress() {
+            if (confirm('האם אתה בטוח שברצונך לאפס את כל ההתקדמות?')) {
+                state.progress = {};
+                saveData();
+                location.reload();
+            }
+        }
+
+        function toggleTheme() {
+            state.theme = state.theme === 'light' ? 'dark' : 'light';
+            applyTheme();
+            saveData();
+        }
+
+        function applyTheme() {
+            document.documentElement.setAttribute('data-theme', state.theme);
+            document.querySelector('.theme-switch').textContent = state.theme === 'light' ? '🌙' : '☀️';
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "mishna_tracker_backup.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        function importData(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    state = { ...state, ...data };
+                    saveData();
+                    alert('הנתונים טעינו בהצלחה!');
+                    location.reload();
+                } catch (err) {
+                    alert('שגיאה בטעינת הקובץ');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // --- Confetti Effect ---
+        function triggerConfetti() {
+            const canvas = document.getElementById('confetti');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const pieces = [];
+            for (let i = 0; i < 50; i++) {
+                pieces.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+                    size: Math.random() * 8 + 4,
+                    speed: Math.random() * 5 + 2
+                });
+            }
+
+            let animationId;
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let active = false;
+                pieces.forEach(p => {
+                    p.y += p.speed;
+                    if (p.y < canvas.height) active = true;
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(p.x, p.y, p.size, p.size);
+                });
+
+                if (active) animationId = requestAnimationFrame(animate);
+                else ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            animate();
+        }
+
+        // --- PWA Setup ---
+        function setupPWA() {
+            const manifest = {
+                "name": "המשנה שלי",
+                "short_name": "משנה",
+                "start_url": ".",
+                "display": "standalone",
+                "background_color": "#F0F4F8",
+                "theme_color": "#4A90E2",
+                "icons": [
+                    {
+                        "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%234A90E2'/%3E%3Ctext x='50%25' y='50%25' font-family='sans-serif' font-size='256' fill='white' text-anchor='middle' dy='.3em'%3E📖%3C/text%3E%3C/svg%3E",
+                        "sizes": "192x192",
+                        "type": "image/svg+xml"
+                    }
+                ]
+            };
+            const stringManifest = JSON.stringify(manifest);
+            const blob = new Blob([stringManifest], { type: 'application/json' });
+            const manifestURL = URL.createObjectURL(blob);
+
+            const link = document.createElement('link');
+            link.rel = 'manifest';
+            link.href = manifestURL;
+            document.head.appendChild(link);
+
+            if ('serviceWorker' in navigator) {
+                const swCode = `
+                const CACHE_NAME = 'mishna-v2';
+                self.addEventListener('install', e => {
+                    e.waitUntil(
+                        caches.open(CACHE_NAME).then(cache => {
+                            return cache.addAll(['./', './index.html']);
+                        })
+                    );
+                });
+                self.addEventListener('fetch', e => {
+                    e.respondWith(
+                        caches.match(e.request).then(response => {
+                            return response || fetch(e.request);
+                        })
+                    );
+                });
+            `;
+                const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(swBlob);
+
+                navigator.serviceWorker.register(swUrl).catch(console.error);
+            }
+        }
+
+        init();
+    </script>
+
+</body>
+
+</html>
