@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>משנה שחר</title>
+<meta name="theme-color" content="#0f1923">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Hebrew:wght@300;400;600;700;900&family=Heebo:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Deep night-blue base with teal/cyan accents */
+  --bg:        #0f1923;
+  --surface:   #172130;
+  --surface2:  #1e2d3f;
+  --border:    rgba(100,180,220,0.12);
+  --border-hi: rgba(100,180,220,0.3);
+  --accent:    #4fc3f7;
+  --accent2:   #00e5c0;
+  --accent3:   #f9a825;
+  --text:      #dde8f0;
+  --text-dim:  #6b8fa8;
+  --success:   #26d982;
+  --danger:    #ff6b6b;
+  --glow:      0 0 20px rgba(79,195,247,0.2);
+  --glow-lg:   0 0 40px rgba(79,195,247,0.15);
+  --r:         14px;
+  --r-lg:      20px;
+  --fn-serif:  'Noto Serif Hebrew', serif;
+  --fn-sans:   'Heebo', sans-serif;
+}
+[data-theme="light"] {
+  --bg:        #eef4f9;
+  --surface:   #ffffff;
+  --surface2:  #f0f7fd;
+  --border:    rgba(30,100,150,0.12);
+  --border-hi: rgba(30,100,150,0.3);
+  --accent:    #0277bd;
+  --accent2:   #00897b;
+  --accent3:   #e65100;
+  --text:      #1a2e3d;
+  --text-dim:  #5a7a90;
+  --success:   #1b8a55;
+  --glow:      0 4px 20px rgba(2,119,189,0.12);
+  --glow-lg:   0 8px 32px rgba(2,119,189,0.1);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+
+body{
+  font-family:var(--fn-sans);
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  padding-bottom:80px;
+  transition:background .3s, color .3s;
+  overflow-x:hidden;
+}
+
+/* Ambient grid pattern */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ── HEADER ── */
+header{
+  position:sticky;top:0;z-index:100;
+  background:var(--bg);
+  border-bottom:1px solid var(--border);
+  padding:14px 18px;
+  display:flex;align-items:center;justify-content:space-between;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+.logo{
+  font-family:var(--fn-serif);
+  font-size:1.25rem;
+  font-weight:700;
+  background:linear-gradient(120deg, var(--accent), var(--accent2));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  letter-spacing:0.02em;
+}
+.logo-sub{font-size:0.68rem;color:var(--text-dim);font-weight:400;-webkit-text-fill-color:var(--text-dim);background:none;display:block;margin-top:1px;letter-spacing:.05em;}
+.icon-btn{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--surface);
+  border:1px solid var(--border);
+  color:var(--accent);font-size:1rem;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .2s;
+}
+.icon-btn:active{transform:scale(.9)}
+
+/* ── LAYOUT ── */
+.container{max-width:720px;margin:0 auto;padding:16px;position:relative;z-index:1}
+
+/* ── SECTION HEADER ── */
+.sh{
+  display:flex;align-items:center;gap:10px;
+  font-size:.7rem;font-weight:600;
+  color:var(--text-dim);
+  letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:14px;
+}
+.sh::before,.sh::after{content:'';flex:1;height:1px;background:var(--border)}
+.sh::before{flex:0 0 0px;display:none}
+
+/* ── RING DASHBOARD ── */
+.dash-top{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:18px;
+  align-items:center;
+  padding:20px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  margin-bottom:14px;
+  box-shadow:var(--glow);
+}
+.ring-wrap{position:relative;width:110px;height:110px;flex-shrink:0}
+.ring-wrap svg{transform:rotate(-90deg)}
+.ring-track{stroke:var(--border)}
+.ring-fill{
+  stroke:url(#ringGrad);
+  stroke-linecap:round;
+  transition:stroke-dashoffset .9s cubic-bezier(.4,0,.2,1);
+}
+.ring-center{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.ring-pct{
+  font-family:var(--fn-serif);
+  font-size:1.6rem;font-weight:900;
+  background:linear-gradient(120deg, var(--accent), var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  line-height:1;
+}
+.ring-lbl{font-size:.6rem;color:var(--text-dim);letter-spacing:.1em;margin-top:2px}
+.dash-stats{display:flex;flex-direction:column;gap:10px}
+.dash-stat{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface2);border-radius:10px;border:1px solid var(--border)}
+.ds-label{font-size:.75rem;color:var(--text-dim)}
+.ds-val{font-family:var(--fn-serif);font-size:1.15rem;font-weight:700;color:var(--accent)}
+
+/* ── MINI SEDER PROGRESS STRIP ── */
+.seder-strip{
+  display:flex;gap:6px;padding:14px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  margin-bottom:14px;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.seder-strip::-webkit-scrollbar{display:none}
+.seder-dot{
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  flex:1;min-width:52px;cursor:pointer;
+  padding:6px 4px;border-radius:10px;
+  transition:background .2s;
+}
+.seder-dot:hover{background:var(--surface2)}
+.seder-ring-mini{position:relative;width:38px;height:38px}
+.seder-ring-mini svg{transform:rotate(-90deg)}
+.seder-ring-mini .s-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.seder-name{font-size:.62rem;color:var(--text-dim);text-align:center;line-height:1.2}
+
+/* ── GOAL CARD ── */
+.goal-card{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 16px;
+  background:linear-gradient(135deg, var(--surface), var(--surface2));
+  border:1px solid var(--border-hi);
+  border-radius:var(--r);
+  margin-bottom:14px;
+  cursor:pointer;
+  transition:box-shadow .2s;
+}
+.goal-card:hover{box-shadow:var(--glow)}
+.goal-icon{font-size:1.6rem}
+.goal-info{flex:1}
+.goal-title{font-size:.82rem;font-weight:600;color:var(--text)}
+.goal-sub{font-size:.72rem;color:var(--text-dim);margin-top:2px}
+.goal-badge{
+  background:var(--accent);color:var(--bg);
+  font-weight:700;font-size:.8rem;
+  padding:4px 10px;border-radius:50px;
+  white-space:nowrap;
+}
+
+/* ── GRID MENU ── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+
+.gi{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:14px 12px;
+  cursor:pointer;
+  display:flex;flex-direction:column;align-items:flex-start;
+  gap:6px;
+  transition:all .2s;
+  position:relative;
+  overflow:hidden;
+  min-height:100px;
+  animation:fadeUp .25s ease both;
+}
+.gi::after{
+  content:'';
+  position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg, var(--accent), var(--accent2));
+  opacity:0;transition:opacity .2s;
+}
+.gi:hover::after{opacity:1}
+.gi:hover{border-color:var(--border-hi);box-shadow:var(--glow);transform:translateY(-1px)}
+.gi:active{transform:scale(.97)}
+.gi.done{border-color:rgba(38,217,130,.3);background:rgba(38,217,130,.05)}
+.gi.done .gi-name{color:var(--success)}
+.gi.done::after{opacity:1;background:var(--success)}
+
+.gi-emoji{font-size:1.4rem;line-height:1}
+.gi-name{font-family:var(--fn-serif);font-size:.95rem;font-weight:700;color:var(--text);line-height:1.2}
+.gi-sub{font-size:.68rem;color:var(--text-dim)}
+.gi-bar-wrap{width:100%;height:3px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:2px}
+.gi-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width .4s}
+.gi.done .gi-bar{background:var(--success)}
+
+/* mark-all circle button top-left */
+.gi-mark{
+  position:absolute;top:7px;left:7px;
+  width:24px;height:24px;border-radius:50%;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  color:var(--text-dim);font-size:.7rem;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;z-index:5;transition:all .2s;
+}
+.gi-mark:hover{background:var(--success);color:var(--bg);border-color:var(--success)}
+.gi.done .gi-mark{background:var(--success);color:var(--bg);border-color:var(--success)}
+
+/* ── CHAPTER VIEW ── */
+.ch-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  margin-bottom:14px;
+}
+.ch-title{font-family:var(--fn-serif);font-size:1.1rem;font-weight:700}
+.ch-prog{font-size:.75rem;color:var(--text-dim);margin-top:2px}
+
+/* mishna grid */
+.m-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:8px}
+.m-btn{
+  aspect-ratio:1;border-radius:10px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  font-family:var(--fn-serif);font-size:1rem;font-weight:700;
+  color:var(--text-dim);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .18s;
+}
+.m-btn:active{transform:scale(.88)}
+.m-btn.on{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:var(--bg);border-color:transparent;
+  box-shadow:0 4px 12px rgba(79,195,247,.3);
+}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+.m-btn.pop{animation:pop .22s ease}
+
+/* ── BREADCRUMBS ── */
+.bc{
+  display:flex;align-items:center;gap:4px;
+  overflow-x:auto;scrollbar-width:none;
+  padding:8px 0 12px;
+}
+.bc::-webkit-scrollbar{display:none}
+.bci{font-size:.78rem;color:var(--text-dim);cursor:pointer;padding:3px 7px;border-radius:6px;white-space:nowrap;transition:all .15s}
+.bci:hover{background:var(--surface2);color:var(--text)}
+.bci.active{color:var(--accent);font-weight:600}
+.bcs{color:var(--border-hi);font-size:.7rem}
+
+/* ── BUTTONS ── */
+.btn{
+  font-family:var(--fn-sans);font-weight:600;
+  border:none;border-radius:50px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  transition:all .2s;
+  font-size:.85rem;letter-spacing:.02em;
+}
+.btn:active{transform:scale(.95)}
+.btn-primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:var(--bg);padding:12px 22px;
+  box-shadow:0 4px 16px rgba(79,195,247,.25);
+}
+.btn-primary:hover{box-shadow:0 6px 24px rgba(79,195,247,.4)}
+.btn-ghost{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 16px}
+.btn-ghost:hover{border-color:var(--border-hi)}
+.btn-danger{background:transparent;border:1px solid rgba(255,107,107,.3);color:var(--danger);padding:10px 16px}
+.btn-sm{padding:6px 12px;font-size:.75rem;border-radius:8px}
+.btn-block{width:100%}
+
+/* ── SETTINGS ── */
+.settings-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;margin-bottom:14px}
+.settings-title{font-family:var(--fn-serif);font-size:.95rem;font-weight:700;color:var(--accent);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+label.lbl{display:block;font-size:.72rem;font-weight:600;color:var(--text-dim);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;margin-top:14px}
+label.lbl:first-of-type{margin-top:0}
+input,select{
+  width:100%;padding:11px 13px;border-radius:10px;
+  border:1px solid var(--border);background:var(--surface2);
+  color:var(--text);font-family:var(--fn-sans);font-size:.9rem;
+  transition:border-color .2s;-webkit-appearance:none;
+}
+input:focus,select:focus{outline:none;border-color:var(--accent)}
+.data-actions{display:flex;flex-direction:column;gap:8px}
+hr.div{border:none;border-top:1px solid var(--border);margin:10px 0}
+
+/* ── NAV BAR ── */
+.nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--bg);
+  border-top:1px solid var(--border);
+  display:flex;justify-content:space-around;
+  padding:10px 0 14px;
+  z-index:100;
+  backdrop-filter:blur(16px);
+}
+.ni{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  cursor:pointer;padding:4px 16px;border-radius:10px;
+  color:var(--text-dim);transition:color .2s;
+}
+.ni .ni-icon{font-size:1.2rem}
+.ni .ni-lbl{font-size:.6rem;font-weight:500;letter-spacing:.06em}
+.ni.active{color:var(--accent)}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:86px;left:50%;
+  transform:translateX(-50%) translateY(8px);
+  background:var(--surface);
+  border:1px solid var(--border-hi);
+  color:var(--text);
+  padding:10px 18px;border-radius:50px;
+  font-size:.8rem;font-weight:500;
+  opacity:0;transition:all .25s;z-index:200;
+  pointer-events:none;white-space:nowrap;
+  box-shadow:var(--glow);
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── CONFETTI ── */
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:999}
+
+/* ── UTILS ── */
+.hidden{display:none!important}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.gi:nth-child(1){animation-delay:.02s}
+.gi:nth-child(2){animation-delay:.04s}
+.gi:nth-child(3){animation-delay:.06s}
+.gi:nth-child(4){animation-delay:.08s}
+.gi:nth-child(5){animation-delay:.1s}
+.gi:nth-child(6){animation-delay:.12s}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">📜 משנה שחר<span class="logo-sub">מעקב לימוד יומי</span></div>
+  </div>
+  <button class="icon-btn" id="theme-btn" onclick="toggleTheme()">☀️</button>
+</header>
+
+<div class="container" id="app">
+
+  <!-- ═══ DASHBOARD ═══ -->
+  <section id="dashboard">
+    <div class="dash-top">
+      <div class="ring-wrap">
+        <svg width="110" height="110" viewBox="0 0 110 110">
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#4fc3f7"/>
+              <stop offset="100%" stop-color="#00e5c0"/>
+            </linearGradient>
+          </defs>
+          <circle class="ring-track" cx="55" cy="55" r="46" stroke-width="8" fill="none"/>
+          <circle class="ring-fill" id="ring-fill" cx="55" cy="55" r="46" stroke-width="8" fill="none"
+            stroke-dasharray="289.03" stroke-dashoffset="289.03"/>
+        </svg>
+        <div class="ring-center">
+          <div class="ring-pct" id="pct">0%</div>
+          <div class="ring-lbl">הושלם</div>
+        </div>
+      </div>
+      <div class="dash-stats">
+        <div class="dash-stat">
+          <span class="ds-label">פרקים הושלמו</span>
+          <span class="ds-val" id="s-done">0</span>
+        </div>
+        <div class="dash-stat">
+          <span class="ds-label">פרקים נותרו</span>
+          <span class="ds-val" id="s-left">0</span>
+        </div>
+        <div class="dash-stat">
+          <span class="ds-label">ימים לסיום</span>
+          <span class="ds-val" id="s-days">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Per-seder mini rings -->
+    <div class="seder-strip" id="seder-strip"></div>
+
+    <div class="goal-card" onclick="switchTab('study')">
+      <div class="goal-icon">📖</div>
+      <div class="goal-info">
+        <div class="goal-title">יעד יומי</div>
+        <div class="goal-sub" id="goal-sub">לחץ כדי להתחיל ללמוד</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <div class="goal-badge" id="goal-badge">2 פרקים</div>
+        <div style="font-size:.68rem;color:var(--text-dim)" id="s-date">--/--/--</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ STUDY ═══ -->
+  <section id="study" class="hidden">
+    <div class="bc" id="bc"></div>
+    <div id="study-content"></div>
+  </section>
+
+  <!-- ═══ SETTINGS ═══ -->
+  <section id="settings" class="hidden">
+    <div class="settings-card">
+      <div class="settings-title">⚙️ הגדרות לימוד</div>
+      <label class="lbl">שיטת חישוב</label>
+      <select id="calc-method" onchange="toggleCalcMethod()">
+        <option value="rate">לפי קצב יומי (פרקים)</option>
+        <option value="date">לפי תאריך יעד</option>
+      </select>
+      <div id="rate-grp">
+        <label class="lbl">פרקים ליום</label>
+        <input type="number" id="rate-in" placeholder="2" min="1">
+      </div>
+      <div id="date-grp" class="hidden">
+        <label class="lbl">תאריך יעד</label>
+        <input type="date" id="date-in">
+      </div>
+      <div style="margin-top:14px">
+        <button class="btn btn-primary btn-block" onclick="saveSettings()">💾 שמור</button>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-title">📁 ניהול נתונים</div>
+      <div class="data-actions">
+        <button class="btn btn-ghost" onclick="exportData()">⬆️ ייצא (JSON)</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('imp').click()">⬇️ ייבא נתונים</button>
+        <input type="file" id="imp" style="display:none" onchange="importData(this)">
+        <hr class="div">
+        <button class="btn btn-danger" onclick="resetAll()">🗑 אפס הכל</button>
+      </div>
+    </div>
+
+    <div class="settings-card" style="font-size:.82rem;color:var(--text-dim);line-height:1.8">
+      <div class="settings-title">ℹ️ אודות</div>
+      סה״כ 4,192 משניות · 525 פרקים · 63 מסכתות · 6 סדרים<br>
+      נתונים לפי מסורת הדפוס הווילנאי.<br>
+      כל ההתקדמות נשמרת מקומית במכשירך.
+    </div>
+  </section>
+</div>
+
+<nav class="nav">
+  <div class="ni active" id="ni-dashboard" onclick="switchTab('dashboard')">
+    <span class="ni-icon">🏠</span><span class="ni-lbl">בית</span>
+  </div>
+  <div class="ni" id="ni-study" onclick="switchTab('study')">
+    <span class="ni-icon">📖</span><span class="ni-lbl">לימוד</span>
+  </div>
+  <div class="ni" id="ni-settings" onclick="switchTab('settings')">
+    <span class="ni-icon">⚙️</span><span class="ni-lbl">הגדרות</span>
+  </div>
+</nav>
+
+<div id="toast"></div>
+<canvas id="confetti"></canvas>
+
+<script>
+// ═══ DATA — verified against Wikipedia / Sefaria (4,192 total mishnayot) ═══
+const MS = {
+  "זרעים":{
+    "ברכות":[5,8,6,7,5,8,5,8,5],
+    "פאה":[6,8,8,11,8,11,8,9],
+    "דמאי":[4,5,6,7,11,12,8],
+    "כלאיים":[9,11,7,9,8,9,8,6,10],
+    "שביעית":[8,10,10,10,9,6,7,11,9,9],
+    "תרומות":[10,6,9,13,9,6,7,12,7,12,10],
+    "מעשרות":[8,8,10,6,8],
+    "מעשר שני":[7,10,13,12,15],
+    "חלה":[9,8,10,11],
+    "ערלה":[9,17,9],
+    "ביכורים":[11,11,12,5]
+  },
+  "מועד":{
+    "שבת":[11,7,6,2,4,10,4,7,7,6,6,6,7,4,3,8,8,3,6,5,3,6,5,5],
+    "עירובין":[10,6,9,11,9,10,11,11,4,15],
+    "פסחים":[7,8,8,9,10,6,13,8,11,9],
+    "שקלים":[7,5,4,9,6,6,7,8],
+    "יומא":[8,7,11,6,7,8,5,9],
+    "סוכה":[11,9,15,10,8],
+    "ביצה":[10,10,8,7,7],
+    "ראש השנה":[9,9,8,9],
+    "תענית":[7,10,9,8],
+    "מגילה":[11,6,6,10],
+    "מועד קטן":[10,5,9],
+    "חגיגה":[8,7,8]
+  },
+  "נשים":{
+    "יבמות":[4,10,10,13,6,6,6,6,6,9,7,6,13,9,10,7],
+    "כתובות":[10,10,9,12,9,7,10,8,9,6,6,4,11],
+    "נדרים":[4,5,11,8,6,10,9,7,10,8,12],
+    "נזיר":[7,10,7,7,7,11,4,2,5],
+    "סוטה":[9,6,8,5,5,4,8,7,15],
+    "גיטין":[6,7,8,9,9,7,9,10,10],
+    "קידושין":[10,10,13,14]
+  },
+  "נזיקין":{
+    "בבא קמא":[4,6,11,9,7,6,7,7,12,10],
+    "בבא מציעא":[8,11,12,12,11,8,11,9,13,6],
+    "בבא בתרא":[6,14,8,9,11,8,4,8,10,8],
+    "סנהדרין":[6,5,8,5,5,6,11,7,6,6,6],
+    "מכות":[10,8,16],
+    "שבועות":[7,5,11,13,5,7,8,6],
+    "עדיות":[14,10,12,12,7,3,9,7],
+    "עבודה זרה":[9,7,10,12,12],
+    "אבות":[18,16,18,22,23,11],
+    "הוריות":[5,7,8]
+  },
+  "קדשים":{
+    "זבחים":[4,5,6,6,8,7,6,12,7,8,8,6,8,10],
+    "מנחות":[4,5,7,5,9,7,6,7,9,9,9,5,11],
+    "חולין":[7,10,7,7,5,7,6,6,8,4,2,5],
+    "בכורות":[7,9,4,10,6,12,7,10,8],
+    "ערכין":[4,6,5,4,6,5,5,7,8],
+    "תמורה":[6,3,5,4,6,5,6],
+    "כריתות":[7,6,10,3,8,9],
+    "מעילה":[4,9,8,6,5,6],
+    "תמיד":[4,5,9,3,6,3,4],
+    "מידות":[9,6,8,7,4],
+    "קינים":[4,5,6]
+  },
+  "טהרות":{
+    "כלים":[9,8,8,4,11,4,6,11,8,8,9,8,8,8,6,8,17,9,10,7,3,10,5,17,9,9,12,10,8,4],
+    "אהלות":[8,7,7,3,7,7,6,6,16,7,9,8,6,7,10,5,5,10],
+    "נגעים":[6,5,8,11,5,8,5,10,3,10,12,7,12,13],
+    "פרה":[4,5,11,4,9,5,12,11,9,6,9,11],
+    "טהרות":[9,8,8,13,9,10,9,9,9,8],
+    "מקואות":[8,10,4,5,6,11,7,5,7,8],
+    "נידה":[7,7,7,7,9,14,5,4,11,8],
+    "מכשירים":[6,11,8,10,11,8],
+    "זבים":[6,4,3,7,12],
+    "טבול יום":[5,8,6,7],
+    "ידיים":[5,4,5,8],
+    "עוקצין":[6,10,12]
+  }
+};
+const EMO={"זרעים":"🌱","מועד":"🕯","נשים":"💍","נזיקין":"⚖️","קדשים":"🕍","טהרות":"💧"};
+const HEB=["","א","ב","ג","ד","ה","ו","ז","ח","ט","י","יא","יב","יג","יד","טו","טז","יז","יח","יט","כ","כא","כב","כג","כד","כה","כו","כז","כח","כט","ל"];
+
+let state={progress:{},dailyRate:2,targetDate:null,calcMethod:'rate',theme:'dark',path:[]};
+
+// ═══ INIT ═══
+function init(){
+  try{const s=localStorage.getItem('mshv4');if(s)state={...state,...JSON.parse(s)}}catch(e){}
+  applyTheme();
+  document.getElementById('date-in').min=new Date().toISOString().split('T')[0];
+  renderDash();
+  renderStudy();
+}
+
+function save(){
+  localStorage.setItem('mshv4',JSON.stringify(state));
+  renderDash();
+}
+
+// ═══ HELPERS ═══
+function getCnt(m,c){for(const s in MS)if(MS[s][m])return MS[s][m][c-1]||0;return 0}
+
+function chDone(m,c){
+  const cnt=getCnt(m,c),cid=`${m}-${c}`;
+  for(let i=1;i<=cnt;i++)if(!state.progress[`${cid}-${i}`])return false;
+  return cnt>0;
+}
+function chProg(m,c){
+  const cnt=getCnt(m,c),cid=`${m}-${c}`;
+  let d=0;for(let i=1;i<=cnt;i++)if(state.progress[`${cid}-${i}`])d++;
+  return{d,t:cnt};
+}
+function mDone(s,m){return MS[s][m].every((_,i)=>chDone(m,i+1))}
+function sDone(s){return Object.keys(MS[s]).every(m=>mDone(s,m))}
+function sProg(s){let d=0,t=0;for(const m in MS[s]){const chs=MS[s][m].length;t+=chs;for(let c=1;c<=chs;c++)if(chDone(m,c))d++;}return{d,t}}
+function mChProg(m){let d=0,t=0;for(const s in MS)if(MS[s][m]){t=MS[s][m].length;for(let c=1;c<=t;c++)if(chDone(m,c))d++;}return{d,t}}
+function mMiProg(m){let d=0,t=0;for(const s in MS){if(!MS[s][m])continue;const chs=MS[s][m].length;for(let c=1;c<=chs;c++){const{d:cd,t:ct}=chProg(m,c);d+=cd;t+=ct;}}return{d,t}}
+
+function getStats(){
+  let totCh=0,doneCh=0;
+  for(const s in MS)for(const m in MS[s]){const chs=MS[s][m].length;totCh+=chs;for(let c=1;c<=chs;c++)if(chDone(m,c))doneCh++;}
+  const rem=totCh-doneCh;
+  let rate=state.dailyRate,days=0;
+  let est=new Date();
+  if(state.calcMethod==='date'&&state.targetDate){
+    const tgt=new Date(state.targetDate);
+    days=Math.max(0,Math.ceil((tgt-new Date())/86400000));
+    rate=days>0?Math.ceil(rem/days):rem;
+  } else {
+    days=rate>0?Math.ceil(rem/rate):0;
+    est.setDate(est.getDate()+days);
+  }
+  return{totCh,doneCh,rem,rate,days,est};
+}
+
+// ═══ DASHBOARD ═══
+function renderDash(){
+  const st=getStats();
+  const circ=2*Math.PI*46; // r=46
+  const pct=st.totCh>0?st.doneCh/st.totCh:0;
+  const fill=document.getElementById('ring-fill');
+  fill.style.strokeDasharray=circ;
+  fill.style.strokeDashoffset=circ-pct*circ;
+  document.getElementById('pct').textContent=Math.round(pct*100)+'%';
+  document.getElementById('s-done').textContent=st.doneCh;
+  document.getElementById('s-left').textContent=st.rem;
+  document.getElementById('s-days').textContent=st.days;
+  const opts={month:'2-digit',day:'2-digit',year:'2-digit'};
+  const estDate=(state.calcMethod==='date'&&state.targetDate)
+    ?new Date(state.targetDate).toLocaleDateString('he-IL',opts)
+    :st.est.toLocaleDateString('he-IL',opts);
+  document.getElementById('s-date').textContent=`סיום: ${estDate}`;
+  const rate=state.calcMethod==='date'?st.rate:state.dailyRate;
+  document.getElementById('goal-badge').textContent=`${rate} פרקים`;
+  document.getElementById('goal-sub').textContent=`${st.days} ימים לסיום · ${st.rem} פרקים נותרו`;
+
+  // Seder mini rings
+  const strip=document.getElementById('seder-strip');
+  strip.innerHTML='';
+  const circ2=2*Math.PI*14;
+  for(const s in MS){
+    const{d,t}=sProg(s);
+    const p=t>0?d/t:0;
+    const offset=circ2-p*circ2;
+    const dot=document.createElement('div');
+    dot.className='seder-dot';
+    dot.innerHTML=`
+      <div class="seder-ring-mini">
+        <svg width="38" height="38" viewBox="0 0 38 38">
+          <circle cx="19" cy="19" r="14" stroke-width="4" fill="none" stroke="var(--border)"/>
+          <circle cx="19" cy="19" r="14" stroke-width="4" fill="none"
+            stroke="${p===1?'var(--success)':'var(--accent)'}"
+            stroke-dasharray="${circ2}" stroke-dashoffset="${offset}"
+            stroke-linecap="round"/>
+        </svg>
+        <div class="s-center">${EMO[s]}</div>
+      </div>
+      <div class="seder-name">${s}</div>`;
+    dot.onclick=()=>{switchTab('study');state.path=[s];renderStudy();};
+    strip.appendChild(dot);
+  }
+
+  // Settings sync
+  document.getElementById('rate-in').value=state.dailyRate;
+  document.getElementById('date-in').value=state.targetDate||'';
+  document.getElementById('calc-method').value=state.calcMethod;
+  toggleCalcMethod();
+}
+
+// ═══ STUDY ═══
+function renderStudy(){
+  const cont=document.getElementById('study-content');
+  const bc=document.getElementById('bc');
+  cont.innerHTML='';bc.innerHTML='';
+
+  const home=mk('span','bci','ראשי');home.onclick=()=>nav([]);bc.appendChild(home);
+  state.path.forEach((item,i)=>{
+    bc.appendChild(mk('span','bcs',' › '));
+    const c=mk('span','bci'+(i===state.path.length-1?' active':''),item);
+    c.onclick=()=>nav(state.path.slice(0,i+1));
+    bc.appendChild(c);
+  });
+
+  const d=state.path.length;
+
+  if(d===0){
+    const g=mk('div','grid');
+    for(const s in MS){
+      const done=sDone(s);
+      const{d:pd,t:pt}=sProg(s);
+      const gi=mk('div','gi'+(done?' done':''));
+      const mb=mk('button','gi-mark','✓');
+      mb.onclick=e=>{e.stopPropagation();markSeder(s)};
+      gi.innerHTML=`
+        <div class="gi-emoji">${EMO[s]}</div>
+        <div class="gi-name">${s}</div>
+        <div class="gi-sub">${Object.keys(MS[s]).length} מסכתות · ${pd}/${pt} פרקים</div>
+        <div class="gi-bar-wrap"><div class="gi-bar" style="width:${pt>0?Math.round(pd/pt*100):0}%"></div></div>`;
+      gi.appendChild(mb);
+      gi.addEventListener('click',()=>nav([s]));
+      g.appendChild(gi);
+    }
+    cont.appendChild(g);
+  } else if(d===1){
+    const[s]=state.path;
+    const g=mk('div','grid');
+    for(const m in MS[s]){
+      const done=mDone(s,m);
+      const{d:pd,t:pt}=mChProg(m);
+      const{d:md,t:mt}=mMiProg(m);
+      const gi=mk('div','gi'+(done?' done':''));
+      const mb=mk('button','gi-mark','✓');
+      mb.onclick=e=>{e.stopPropagation();markMasechet(s,m)};
+      gi.innerHTML=`
+        <div class="gi-name">${m}</div>
+        <div class="gi-sub">${pt} פרקים · ${md}/${mt} משניות</div>
+        <div class="gi-bar-wrap"><div class="gi-bar" style="width:${pt>0?Math.round(pd/pt*100):0}%"></div></div>`;
+      gi.appendChild(mb);
+      gi.addEventListener('click',()=>nav([s,m]));
+      g.appendChild(gi);
+    }
+    cont.appendChild(g);
+  } else if(d===2){
+    const[s,m]=state.path;
+    const g=mk('div','grid');
+    MS[s][m].forEach((cnt,idx)=>{
+      const c=idx+1;
+      const done=chDone(m,c);
+      const{d:pd,t:pt}=chProg(m,c);
+      const gi=mk('div','gi'+(done?' done':''));
+      const mb=mk('button','gi-mark','✓');
+      mb.onclick=e=>{e.stopPropagation();markChapter(m,c)};
+      gi.innerHTML=`
+        <div class="gi-name">פרק ${HEB[c]||c}</div>
+        <div class="gi-sub">${pd}/${pt} משניות</div>
+        <div class="gi-bar-wrap"><div class="gi-bar" style="width:${pt>0?Math.round(pd/pt*100):0}%"></div></div>`;
+      gi.appendChild(mb);
+      gi.addEventListener('click',()=>nav([s,m,c]));
+      g.appendChild(gi);
+    });
+    cont.appendChild(g);
+  } else if(d===3){
+    const[s,m,c]=state.path;
+    const cid=`${m}-${c}`,cnt=getCnt(m,c);
+    const{d:pd}=chProg(m,c);
+    const hdr=mk('div','ch-header');
+    hdr.innerHTML=`<div><div class="ch-title">${m} — פרק ${HEB[c]||c}</div><div class="ch-prog">${pd} מתוך ${cnt} משניות</div></div>`;
+    const allBtn=mk('button','btn btn-sm btn-ghost','✅ סמן הכל');
+    allBtn.onclick=()=>markChapter(m,c);
+    hdr.appendChild(allBtn);
+    cont.appendChild(hdr);
+
+    const g=mk('div','m-grid');
+    for(let i=1;i<=cnt;i++){
+      const mid=`${cid}-${i}`;
+      const b=mk('div','m-btn'+(state.progress[mid]?' on':''),HEB[i]||i);
+      b.addEventListener('click',()=>{
+        const on=!!state.progress[mid];
+        if(on)delete state.progress[mid];else{state.progress[mid]=true;triggerConfetti();}
+        b.className='m-btn'+(state.progress[mid]?' on':'');
+        b.classList.add('pop');
+        setTimeout(()=>b.classList.remove('pop'),250);
+        save();renderStudy();
+      });
+      g.appendChild(b);
+    }
+    cont.appendChild(g);
+  }
+}
+
+function nav(p){state.path=p;renderStudy()}
+function mk(t,c,tx){const e=document.createElement(t);if(c)e.className=c;if(tx!==undefined)e.textContent=tx;return e}
+
+// ═══ MARK ACTIONS ═══
+function markChapter(m,c){
+  const cnt=getCnt(m,c),cid=`${m}-${c}`;
+  let all=true;for(let i=1;i<=cnt;i++)if(!state.progress[`${cid}-${i}`]){all=false;break}
+  for(let i=1;i<=cnt;i++){const k=`${cid}-${i}`;if(!all)state.progress[k]=true;else delete state.progress[k]}
+  if(!all)triggerConfetti();
+  save();renderStudy();
+  toast(all?'הסימון הוסר':'✅ פרק הושלם!');
+}
+function markMasechet(s,m){
+  const chs=MS[s][m].length;
+  let all=true;
+  outer:for(let c=1;c<=chs;c++){const cnt=getCnt(m,c);for(let i=1;i<=cnt;i++)if(!state.progress[`${m}-${c}-${i}`]){all=false;break outer}}
+  for(let c=1;c<=chs;c++){const cnt=getCnt(m,c);for(let i=1;i<=cnt;i++){const k=`${m}-${c}-${i}`;if(!all)state.progress[k]=true;else delete state.progress[k]}}
+  if(!all)triggerConfetti();
+  save();renderStudy();
+  toast(all?'הסימון הוסר':`🎉 ${m} הושלמה!`);
+}
+function markSeder(s){
+  let all=true;
+  outer:for(const m in MS[s]){const chs=MS[s][m].length;for(let c=1;c<=chs;c++){const cnt=getCnt(m,c);for(let i=1;i<=cnt;i++)if(!state.progress[`${m}-${c}-${i}`]){all=false;break outer}}}
+  for(const m in MS[s]){const chs=MS[s][m].length;for(let c=1;c<=chs;c++){const cnt=getCnt(m,c);for(let i=1;i<=cnt;i++){const k=`${m}-${c}-${i}`;if(!all)state.progress[k]=true;else delete state.progress[k]}}}
+  if(!all)triggerConfetti();
+  save();renderStudy();
+  toast(all?'הסימון הוסר':`✨ ${s} הושלם!`);
+}
+
+// ═══ TABS ═══
+function switchTab(id){
+  document.querySelectorAll('section').forEach(e=>e.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  document.querySelectorAll('.ni').forEach(e=>e.classList.remove('active'));
+  document.getElementById(`ni-${id}`)?.classList.add('active');
+  if(id==='study')renderStudy();
+  if(id==='dashboard')renderDash();
+}
+
+// ═══ SETTINGS ═══
+function toggleCalcMethod(){
+  const v=document.getElementById('calc-method').value;
+  document.getElementById('rate-grp').classList.toggle('hidden',v!=='rate');
+  document.getElementById('date-grp').classList.toggle('hidden',v!=='date');
+}
+function saveSettings(){
+  state.calcMethod=document.getElementById('calc-method').value;
+  state.dailyRate=parseInt(document.getElementById('rate-in').value)||2;
+  state.targetDate=document.getElementById('date-in').value;
+  save();switchTab('dashboard');toast('✅ ההגדרות נשמרו');
+}
+function resetAll(){
+  if(confirm('לאפס את כל ההתקדמות?')){state.progress={};save();location.reload();}
+}
+function exportData(){
+  const a=document.createElement('a');
+  a.href='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(state));
+  a.download='mishna_backup.json';a.click();toast('📁 יוצא');
+}
+function importData(inp){
+  const r=new FileReader();
+  r.onload=e=>{try{state={...state,...JSON.parse(e.target.result)};save();toast('✅ נטען');setTimeout(()=>location.reload(),800)}catch{toast('❌ שגיאה')}};
+  r.readAsText(inp.files[0]);
+}
+
+// ═══ THEME ═══
+function toggleTheme(){
+  state.theme=state.theme==='dark'?'light':'dark';applyTheme();save();
+}
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme',state.theme);
+  const btn=document.getElementById('theme-btn');
+  if(btn)btn.textContent=state.theme==='dark'?'☀️':'🌙';
+}
+
+// ═══ TOAST ═══
+let _tt;
+function toast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;
+  t.classList.add('show');clearTimeout(_tt);
+  _tt=setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+// ═══ CONFETTI ═══
+function triggerConfetti(){
+  const cv=document.getElementById('confetti');
+  const ctx=cv.getContext('2d');
+  cv.width=window.innerWidth;cv.height=window.innerHeight;
+  const cols=['#4fc3f7','#00e5c0','#f9a825','#26d982','#ff6b6b','#a78bfa'];
+  const ps=Array.from({length:45},()=>({
+    x:Math.random()*cv.width,y:-10-Math.random()*50,
+    vx:(Math.random()-.5)*3,vy:Math.random()*4+2,
+    rot:Math.random()*360,dr:(Math.random()-.5)*7,
+    s:Math.random()*7+3,col:cols[Math.floor(Math.random()*cols.length)],
+    shape:Math.random()>.4?'rect':'circle'
+  }));
+  let raf;
+  function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);let alive=false;
+    for(const p of ps){
+      p.x+=p.vx;p.y+=p.vy;p.rot+=p.dr;
+      if(p.y<cv.height+20)alive=true;
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle=p.col;
+      if(p.shape==='rect')ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);
+      else{ctx.beginPath();ctx.arc(0,0,p.s/2,0,Math.PI*2);ctx.fill();}
+      ctx.restore();
+    }
+    if(alive)raf=requestAnimationFrame(draw);else ctx.clearRect(0,0,cv.width,cv.height);
+  }
+  cancelAnimationFrame(raf);draw();
+}
+
+// ═══ PWA ═══
+(function(){
+  const m={name:"משנה שחר",short_name:"משנה",start_url:".",display:"standalone",
+    background_color:"#0f1923",theme_color:"#0f1923",
+    icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230f1923'/%3E%3Ctext x='50%25' y='55%25' font-size='300' text-anchor='middle' dominant-baseline='middle'%3E📜%3C/text%3E%3C/svg%3E",sizes:"192x192",type:"image/svg+xml"}]};
+  const l=document.createElement('link');l.rel='manifest';
+  l.href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/json'}));
+  document.head.appendChild(l);
+  if('serviceWorker' in navigator){
+    const sw=`const C='mv4';self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll(['./','/index.html']))));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));`;
+    navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{});
+  }
+})();
+
+init();
+</script>
+</body>
+</html>
