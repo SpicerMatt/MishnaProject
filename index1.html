@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>משנה שחר</title>
+<meta name="theme-color" content="#0f1923">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Hebrew:wght@300;400;600;700;900&family=Heebo:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1923;--surface:#172130;--surface2:#1e2d3f;
+  --border:rgba(100,180,220,0.12);--border-hi:rgba(100,180,220,0.3);
+  --accent:#4fc3f7;--accent2:#00e5c0;--accent3:#f9a825;
+  --text:#dde8f0;--text-dim:#6b8fa8;
+  --success:#26d982;--danger:#ff6b6b;
+  --glow:0 0 20px rgba(79,195,247,0.2);
+  --r:14px;--r-lg:20px;
+  --fn-serif:'Noto Serif Hebrew',serif;--fn-sans:'Heebo',sans-serif;
+}
+[data-theme="light"]{
+  --bg:#eef4f9;--surface:#fff;--surface2:#f0f7fd;
+  --border:rgba(30,100,150,0.12);--border-hi:rgba(30,100,150,0.3);
+  --accent:#0277bd;--accent2:#00897b;--text:#1a2e3d;--text-dim:#5a7a90;
+  --success:#1b8a55;--glow:0 4px 20px rgba(2,119,189,0.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+body{font-family:var(--fn-sans);background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px;transition:background .3s,color .3s;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(16px);}
+.logo{font-family:var(--fn-serif);font-size:1.25rem;font-weight:700;background:linear-gradient(120deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.logo-sub{font-size:.68rem;color:var(--text-dim);-webkit-text-fill-color:var(--text-dim);background:none;display:block;margin-top:1px;letter-spacing:.05em;}
+.icon-btn{width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-size:1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
+.icon-btn:active{transform:scale(.9)}
+
+/* LAYOUT */
+.container{max-width:720px;margin:0 auto;padding:16px;position:relative;z-index:1}
+
+/* DASHBOARD */
+.dash-top{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:14px;box-shadow:var(--glow);}
+.ring-wrap{position:relative;width:110px;height:110px;flex-shrink:0}
+.ring-wrap svg{transform:rotate(-90deg)}
+.ring-track{stroke:var(--border)}
+.ring-fill{stroke:url(#ringGrad);stroke-linecap:round;transition:stroke-dashoffset .9s cubic-bezier(.4,0,.2,1);}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-pct{font-family:var(--fn-serif);font-size:1.6rem;font-weight:900;background:linear-gradient(120deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.ring-lbl{font-size:.6rem;color:var(--text-dim);letter-spacing:.1em;margin-top:2px}
+.dash-stats{display:flex;flex-direction:column;gap:10px}
+.dash-stat{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface2);border-radius:10px;border:1px solid var(--border)}
+.ds-label{font-size:.75rem;color:var(--text-dim)}
+.ds-val{font-family:var(--fn-serif);font-size:1.15rem;font-weight:700;color:var(--accent)}
+.seder-strip{display:flex;gap:6px;padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:14px;overflow-x:auto;scrollbar-width:none;}
+.seder-strip::-webkit-scrollbar{display:none}
+.seder-dot{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;min-width:52px;cursor:pointer;padding:6px 4px;border-radius:10px;transition:background .2s;}
+.seder-dot:hover{background:var(--surface2)}
+.seder-ring-mini{position:relative;width:38px;height:38px}
+.seder-ring-mini svg{transform:rotate(-90deg)}
+.seder-ring-mini .s-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.seder-name{font-size:.62rem;color:var(--text-dim);text-align:center;line-height:1.2}
+.goal-card{display:flex;align-items:center;gap:14px;padding:14px 16px;background:linear-gradient(135deg,var(--surface),var(--surface2));border:1px solid var(--border-hi);border-radius:var(--r);margin-bottom:14px;cursor:pointer;transition:box-shadow .2s;}
+.goal-card:hover{box-shadow:var(--glow)}
+.goal-icon{font-size:1.6rem}
+.goal-info{flex:1}
+.goal-title{font-size:.82rem;font-weight:600;color:var(--text)}
+.goal-sub{font-size:.72rem;color:var(--text-dim);margin-top:2px}
+.goal-badge{background:var(--accent);color:var(--bg);font-weight:700;font-size:.8rem;padding:4px 10px;border-radius:50px;white-space:nowrap;}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.gi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 12px;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:6px;transition:all .2s;position:relative;overflow:hidden;min-height:100px;animation:fadeUp .25s ease both;}
+.gi::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0;transition:opacity .2s;}
+.gi:hover::after{opacity:1}
+.gi:hover{border-color:var(--border-hi);box-shadow:var(--glow);transform:translateY(-1px)}
+.gi:active{transform:scale(.97)}
+.gi.done{border-color:rgba(38,217,130,.3);background:rgba(38,217,130,.05)}
+.gi.done .gi-name{color:var(--success)}
+.gi.done::after{opacity:1;background:var(--success)}
+.gi-emoji{font-size:1.4rem;line-height:1}
+.gi-name{font-family:var(--fn-serif);font-size:.95rem;font-weight:700;color:var(--text);line-height:1.2}
+.gi-sub{font-size:.68rem;color:var(--text-dim)}
+.gi-bar-wrap{width:100%;height:3px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:2px}
+.gi-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width .4s}
+.gi.done .gi-bar{background:var(--success)}
+.gi-mark{position:absolute;top:7px;left:7px;width:24px;height:24px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-size:.7rem;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;transition:all .2s;}
+.gi-mark:hover{background:var(--success);color:var(--bg);border-color:var(--success)}
+.gi.done .gi-mark{background:var(--success);color:var(--bg);border-color:var(--success)}
+
+/* CHAPTER HEADER */
+.ch-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:14px;}
+.ch-title{font-family:var(--fn-serif);font-size:1.1rem;font-weight:700}
+.ch-prog{font-size:.75rem;color:var(--text-dim);margin-top:2px}
+
+/* MISHNA GRID */
+.m-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:8px}
+.m-btn{
+  aspect-ratio:1;border-radius:10px;border:1px solid var(--border);
+  background:var(--surface);font-family:var(--fn-serif);font-size:1rem;font-weight:700;
+  color:var(--text-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .18s;position:relative;
+}
+.m-btn:active{transform:scale(.88)}
+.m-btn.on{background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--bg);border-color:transparent;box-shadow:0 4px 12px rgba(79,195,247,.3);}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+.m-btn.pop{animation:pop .22s ease}
+/* small "read" icon on mishna button */
+.m-btn .read-dot{
+  position:absolute;bottom:4px;right:4px;
+  width:6px;height:6px;border-radius:50%;
+  background:var(--accent3);opacity:.7;
+  display:none;
+}
+.m-btn.cached .read-dot{display:block;}
+.m-btn.on .read-dot{background:rgba(255,255,255,.6);}
+
+/* ══ TEXT PANEL (slide-up sheet) ══ */
+.text-panel{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--surface);
+  border-top:1px solid var(--border-hi);
+  border-radius:24px 24px 0 0;
+  z-index:300;
+  max-height:75vh;
+  display:flex;flex-direction:column;
+  transform:translateY(100%);
+  transition:transform .35s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 -8px 40px rgba(0,0,0,.4);
+}
+.text-panel.open{transform:translateY(0)}
+.panel-handle{width:40px;height:4px;background:var(--border-hi);border-radius:99px;margin:12px auto 0;}
+.panel-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 18px 8px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.panel-title{font-family:var(--fn-serif);font-size:1rem;font-weight:700;color:var(--accent)}
+.panel-close{width:32px;height:32px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-size:1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
+.panel-close:active{transform:scale(.9)}
+.panel-meta{padding:8px 18px;font-size:.72rem;color:var(--text-dim);border-bottom:1px solid var(--border);flex-shrink:0;display:flex;gap:12px;align-items:center;}
+.panel-badge{background:var(--surface2);border:1px solid var(--border);border-radius:50px;padding:3px 10px;font-size:.7rem;}
+.panel-body{flex:1;overflow-y:auto;padding:18px;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+.panel-body::-webkit-scrollbar{width:4px}
+.panel-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+
+/* text content */
+.mishna-text{
+  font-family:var(--fn-serif);
+  font-size:1.15rem;
+  line-height:2;
+  color:var(--text);
+  text-align:right;
+  direction:rtl;
+  letter-spacing:.01em;
+}
+.mishna-text-loading{
+  display:flex;flex-direction:column;align-items:center;gap:14px;padding:30px;
+  color:var(--text-dim);font-size:.85rem;
+}
+.spinner{
+  width:32px;height:32px;border-radius:50%;
+  border:3px solid var(--border);
+  border-top-color:var(--accent);
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.text-offline{text-align:center;color:var(--text-dim);padding:24px;font-size:.85rem;line-height:1.8;}
+.text-offline .big{font-size:2rem;margin-bottom:8px;}
+
+/* panel nav */
+.panel-nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 18px 12px;
+  border-top:1px solid var(--border);
+  flex-shrink:0;
+  gap:8px;
+}
+.panel-nav-btn{
+  flex:1;padding:9px;border-radius:10px;
+  background:var(--surface2);border:1px solid var(--border);
+  color:var(--text-dim);font-size:.8rem;font-weight:600;
+  cursor:pointer;transition:all .2s;text-align:center;
+  font-family:var(--fn-sans);
+}
+.panel-nav-btn:hover{border-color:var(--border-hi);color:var(--text)}
+.panel-nav-btn:disabled{opacity:.3;cursor:default}
+.mark-from-panel{
+  flex:1.5;padding:9px;border-radius:10px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border:none;color:var(--bg);font-size:.82rem;font-weight:700;
+  cursor:pointer;transition:all .2s;
+  font-family:var(--fn-sans);
+}
+.mark-from-panel:active{transform:scale(.96)}
+.mark-from-panel.marked{background:linear-gradient(135deg,var(--success),#1aaa5a)}
+
+/* OVERLAY (dim bg when panel open) */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:299;opacity:0;pointer-events:none;transition:opacity .3s;}
+.overlay.show{opacity:1;pointer-events:all;}
+
+/* BREADCRUMBS */
+.bc{display:flex;align-items:center;gap:4px;overflow-x:auto;scrollbar-width:none;padding:8px 0 12px;}
+.bc::-webkit-scrollbar{display:none}
+.bci{font-size:.78rem;color:var(--text-dim);cursor:pointer;padding:3px 7px;border-radius:6px;white-space:nowrap;transition:all .15s;}
+.bci:hover{background:var(--surface2);color:var(--text)}
+.bci.active{color:var(--accent);font-weight:600}
+.bcs{color:var(--border-hi);font-size:.7rem}
+
+/* BUTTONS */
+.btn{font-family:var(--fn-sans);font-weight:600;border:none;border-radius:50px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all .2s;font-size:.85rem;}
+.btn:active{transform:scale(.95)}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--bg);padding:12px 22px;box-shadow:0 4px 16px rgba(79,195,247,.25);}
+.btn-ghost{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 16px;}
+.btn-ghost:hover{border-color:var(--border-hi)}
+.btn-danger{background:transparent;border:1px solid rgba(255,107,107,.3);color:var(--danger);padding:10px 16px;}
+.btn-sm{padding:6px 12px;font-size:.75rem;border-radius:8px;}
+.btn-block{width:100%}
+
+/* SETTINGS */
+.settings-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;margin-bottom:14px;}
+.settings-title{font-family:var(--fn-serif);font-size:.95rem;font-weight:700;color:var(--accent);margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+label.lbl{display:block;font-size:.72rem;font-weight:600;color:var(--text-dim);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;margin-top:14px;}
+label.lbl:first-of-type{margin-top:0}
+input,select{width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:var(--fn-sans);font-size:.9rem;transition:border-color .2s;-webkit-appearance:none;}
+input:focus,select:focus{outline:none;border-color:var(--accent)}
+.data-actions{display:flex;flex-direction:column;gap:8px;}
+hr.div{border:none;border-top:1px solid var(--border);margin:10px 0;}
+
+/* cache stat chip */
+.cache-stat{display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:50px;padding:6px 12px;font-size:.78rem;color:var(--text-dim);margin-bottom:10px;}
+.cache-dot{width:8px;height:8px;border-radius:50%;background:var(--accent3);}
+
+/* NAV */
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:10px 0 14px;z-index:100;backdrop-filter:blur(16px);}
+.ni{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 16px;border-radius:10px;color:var(--text-dim);transition:color .2s;}
+.ni .ni-icon{font-size:1.2rem}
+.ni .ni-lbl{font-size:.6rem;font-weight:500;letter-spacing:.06em;}
+.ni.active{color:var(--accent)}
+
+/* TOAST */
+#toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--surface);border:1px solid var(--border-hi);color:var(--text);padding:10px 18px;border-radius:50px;font-size:.8rem;font-weight:500;opacity:0;transition:all .25s;z-index:400;pointer-events:none;white-space:nowrap;box-shadow:var(--glow);}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:999}
+.hidden{display:none!important}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.gi:nth-child(1){animation-delay:.02s}.gi:nth-child(2){animation-delay:.04s}.gi:nth-child(3){animation-delay:.06s}
+.gi:nth-child(4){animation-delay:.08s}.gi:nth-child(5){animation-delay:.1s}.gi:nth-child(6){animation-delay:.12s}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">📜 משנה שחר<span class="logo-sub">מעקב לימוד יומי</span></div>
+  </div>
+  <button class="icon-btn" id="theme-btn" onclick="toggleTheme()">☀️</button>
+</header>
+
+<div class="container" id="app">
+  <!-- DASHBOARD -->
+  <section id="dashboard">
+    <div class="dash-top">
+      <div class="ring-wrap">
+        <svg width="110" height="110" viewBox="0 0 110 110">
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#4fc3f7"/>
+              <stop offset="100%" stop-color="#00e5c0"/>
+            </linearGradient>
+          </defs>
+          <circle class="ring-track" cx="55" cy="55" r="46" stroke-width="8" fill="none"/>
+          <circle class="ring-fill" id="ring-fill" cx="55" cy="55" r="46" stroke-width="8" fill="none" stroke-dasharray="289.03" stroke-dashoffset="289.03"/>
+        </svg>
+        <div class="ring-center">
+          <div class="ring-pct" id="pct">0%</div>
+          <div class="ring-lbl">הושלם</div>
+        </div>
+      </div>
+      <div class="dash-stats">
+        <div class="dash-stat"><span class="ds-label">פרקים הושלמו</span><span class="ds-val" id="s-done">0</span></div>
+        <div class="dash-stat"><span class="ds-label">פרקים נותרו</span><span class="ds-val" id="s-left">0</span></div>
+        <div class="dash-stat"><span class="ds-label">ימים לסיום</span><span class="ds-val" id="s-days">0</span></div>
+      </div>
+    </div>
+    <div class="seder-strip" id="seder-strip"></div>
+    <div class="goal-card" onclick="switchTab('study')">
+      <div class="goal-icon">📖</div>
+      <div class="goal-info">
+        <div class="goal-title">יעד יומי</div>
+        <div class="goal-sub" id="goal-sub">לחץ כדי להתחיל ללמוד</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <div class="goal-badge" id="goal-badge">2 פרקים</div>
+        <div style="font-size:.68rem;color:var(--text-dim)" id="s-date">--/--/--</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STUDY -->
+  <section id="study" class="hidden">
+    <div class="bc" id="bc"></div>
+    <div id="study-content"></div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="settings" class="hidden">
+    <div class="settings-card">
+      <div class="settings-title">⚙️ הגדרות לימוד</div>
+      <label class="lbl">שיטת חישוב</label>
+      <select id="calc-method" onchange="toggleCalcMethod()">
+        <option value="rate">לפי קצב יומי (פרקים)</option>
+        <option value="date">לפי תאריך יעד</option>
+      </select>
+      <div id="rate-grp"><label class="lbl">פרקים ליום</label><input type="number" id="rate-in" placeholder="2" min="1"></div>
+      <div id="date-grp" class="hidden"><label class="lbl">תאריך יעד</label><input type="date" id="date-in"></div>
+      <div style="margin-top:14px"><button class="btn btn-primary btn-block" onclick="saveSettings()">💾 שמור</button></div>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-title">📚 מטמון טקסטים</div>
+      <div class="cache-stat"><div class="cache-dot"></div><span id="cache-count">0 משניות שמורות</span></div>
+      <p style="font-size:.78rem;color:var(--text-dim);line-height:1.7;margin-bottom:12px">
+        לחץ על כפתור המשנה כדי לקרוא אותה — הטקסט נטען מ-Sefaria ונשמר אוטומטית במכשירך לשימוש אופליין.
+      </p>
+      <button class="btn btn-ghost btn-block" onclick="clearTextCache()">🗑 נקה מטמון טקסטים</button>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-title">📁 ניהול נתונים</div>
+      <div class="data-actions">
+        <button class="btn btn-ghost" onclick="exportData()">⬆️ ייצא (JSON)</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('imp').click()">⬇️ ייבא נתונים</button>
+        <input type="file" id="imp" style="display:none" onchange="importData(this)">
+        <hr class="div">
+        <button class="btn btn-danger" onclick="resetAll()">🗑 אפס הכל</button>
+      </div>
+    </div>
+
+    <div class="settings-card" style="font-size:.82rem;color:var(--text-dim);line-height:1.8">
+      <div class="settings-title">ℹ️ אודות</div>
+      סה״כ 4,192 משניות · 525 פרקים · 63 מסכתות · 6 סדרים<br>
+      נתונים לפי מסורת הדפוס הווילנאי.<br>
+      טקסטים: <a href="https://www.sefaria.org" target="_blank" style="color:var(--accent)">Sefaria</a> (CC-BY-NC)
+    </div>
+  </section>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="ni active" id="ni-dashboard" onclick="switchTab('dashboard')"><span class="ni-icon">🏠</span><span class="ni-lbl">בית</span></div>
+  <div class="ni" id="ni-study" onclick="switchTab('study')"><span class="ni-icon">📖</span><span class="ni-lbl">לימוד</span></div>
+  <div class="ni" id="ni-settings" onclick="switchTab('settings')"><span class="ni-icon">⚙️</span><span class="ni-lbl">הגדרות</span></div>
+</nav>
+
+<!-- TEXT PANEL -->
+<div class="overlay" id="overlay" onclick="closePanel()"></div>
+<div class="text-panel" id="text-panel">
+  <div class="panel-handle"></div>
+  <div class="panel-header">
+    <div class="panel-title" id="panel-title">ברכות א:א</div>
+    <button class="panel-close" onclick="closePanel()">✕</button>
+  </div>
+  <div class="panel-meta">
+    <span class="panel-badge" id="panel-seder">זרעים</span>
+    <span class="panel-badge" id="panel-masechet">ברכות</span>
+    <span style="margin-right:auto;font-size:.7rem" id="panel-num">משנה א</span>
+  </div>
+  <div class="panel-body" id="panel-body">
+    <div class="mishna-text-loading"><div class="spinner"></div>טוען...</div>
+  </div>
+  <div class="panel-nav">
+    <button class="panel-nav-btn" id="btn-prev" onclick="panelNav(-1)">→ קודם</button>
+    <button class="mark-from-panel" id="btn-mark-panel" onclick="markFromPanel()">✓ למדתי</button>
+    <button class="panel-nav-btn" id="btn-next" onclick="panelNav(1)">הבא ←</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+<canvas id="confetti"></canvas>
+
+<script>
+// ══════════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════════
+const MS = {
+  "זרעים":{
+    "ברכות":[5,8,6,7,5,8,5,8,5],"פאה":[6,8,8,11,8,11,8,9],"דמאי":[4,5,6,7,11,12,8],
+    "כלאיים":[9,11,7,9,8,9,8,6,10],"שביעית":[8,10,10,10,9,6,7,11,9,9],
+    "תרומות":[10,6,9,13,9,6,7,12,7,12,10],"מעשרות":[8,8,10,6,8],"מעשר שני":[7,10,13,12,15],
+    "חלה":[9,8,10,11],"ערלה":[9,17,9],"ביכורים":[11,11,12,5]
+  },
+  "מועד":{
+    "שבת":[11,7,6,2,4,10,4,7,7,6,6,6,7,4,3,8,8,3,6,5,3,6,5,5],"עירובין":[10,6,9,11,9,10,11,11,4,15],
+    "פסחים":[7,8,8,9,10,6,13,8,11,9],"שקלים":[7,5,4,9,6,6,7,8],"יומא":[8,7,11,6,7,8,5,9],
+    "סוכה":[11,9,15,10,8],"ביצה":[10,10,8,7,7],"ראש השנה":[9,9,8,9],"תענית":[7,10,9,8],
+    "מגילה":[11,6,6,10],"מועד קטן":[10,5,9],"חגיגה":[8,7,8]
+  },
+  "נשים":{
+    "יבמות":[4,10,10,13,6,6,6,6,6,9,7,6,13,9,10,7],"כתובות":[10,10,9,12,9,7,10,8,9,6,6,4,11],
+    "נדרים":[4,5,11,8,6,10,9,7,10,8,12],"נזיר":[7,10,7,7,7,11,4,2,5],"סוטה":[9,6,8,5,5,4,8,7,15],
+    "גיטין":[6,7,8,9,9,7,9,10,10],"קידושין":[10,10,13,14]
+  },
+  "נזיקין":{
+    "בבא קמא":[4,6,11,9,7,6,7,7,12,10],"בבא מציעא":[8,11,12,12,11,8,11,9,13,6],
+    "בבא בתרא":[6,14,8,9,11,8,4,8,10,8],"סנהדרין":[6,5,8,5,5,6,11,7,6,6,6],
+    "מכות":[10,8,16],"שבועות":[7,5,11,13,5,7,8,6],"עדיות":[14,10,12,12,7,3,9,7],
+    "עבודה זרה":[9,7,10,12,12],"אבות":[18,16,18,22,23,11],"הוריות":[5,7,8]
+  },
+  "קדשים":{
+    "זבחים":[4,5,6,6,8,7,6,12,7,8,8,6,8,10],"מנחות":[4,5,7,5,9,7,6,7,9,9,9,5,11],
+    "חולין":[7,10,7,7,5,7,6,6,8,4,2,5],"בכורות":[7,9,4,10,6,12,7,10,8],
+    "ערכין":[4,6,5,4,6,5,5,7,8],"תמורה":[6,3,5,4,6,5,6],"כריתות":[7,6,10,3,8,9],
+    "מעילה":[4,9,8,6,5,6],"תמיד":[4,5,9,3,6,3,4],"מידות":[9,6,8,7,4],"קינים":[4,5,6]
+  },
+  "טהרות":{
+    "כלים":[9,8,8,4,11,4,6,11,8,8,9,8,8,8,6,8,17,9,10,7,3,10,5,17,9,9,12,10,8,4],
+    "אהלות":[8,7,7,3,7,7,6,6,16,7,9,8,6,7,10,5,5,10],"נגעים":[6,5,8,11,5,8,5,10,3,10,12,7,12,13],
+    "פרה":[4,5,11,4,9,5,12,11,9,6,9,11],"טהרות":[9,8,8,13,9,10,9,9,9,8],
+    "מקואות":[8,10,4,5,6,11,7,5,7,8],"נידה":[7,7,7,7,9,14,5,4,11,8],
+    "מכשירים":[6,11,8,10,11,8],"זבים":[6,4,3,7,12],"טבול יום":[5,8,6,7],
+    "ידיים":[5,4,5,8],"עוקצין":[6,10,12]
+  }
+};
+const EMO={"זרעים":"🌱","מועד":"🕯","נשים":"💍","נזיקין":"⚖️","קדשים":"🕍","טהרות":"💧"};
+const HEB=["","א","ב","ג","ד","ה","ו","ז","ח","ט","י","יא","יב","יג","יד","טו","טז","יז","יח","יט","כ","כא","כב","כג","כד","כה","כו","כז","כח","כט","ל"];
+
+// Sefaria tractate name map (Hebrew → Sefaria English slug)
+const SEFARIA_NAME = {
+  "ברכות":"Berakhot","פאה":"Peah","דמאי":"Demai","כלאיים":"Kilayim","שביעית":"Sheviit",
+  "תרומות":"Terumot","מעשרות":"Maasrot","מעשר שני":"Maaser_Sheni","חלה":"Challah",
+  "ערלה":"Orlah","ביכורים":"Bikkurim","שבת":"Shabbat","עירובין":"Eruvin","פסחים":"Pesachim",
+  "שקלים":"Shekalim","יומא":"Yoma","סוכה":"Sukkah","ביצה":"Beitzah","ראש השנה":"Rosh_Hashanah",
+  "תענית":"Taanit","מגילה":"Megillah","מועד קטן":"Moed_Katan","חגיגה":"Chagigah",
+  "יבמות":"Yevamot","כתובות":"Ketubot","נדרים":"Nedarim","נזיר":"Nazir","סוטה":"Sotah",
+  "גיטין":"Gittin","קידושין":"Kiddushin","בבא קמא":"Bava_Kamma","בבא מציעא":"Bava_Metzia",
+  "בבא בתרא":"Bava_Batra","סנהדרין":"Sanhedrin","מכות":"Makkot","שבועות":"Shevuot",
+  "עדיות":"Eduyot","עבודה זרה":"Avodah_Zarah","אבות":"Pirkei_Avot","הוריות":"Horayot",
+  "זבחים":"Zevachim","מנחות":"Menachot","חולין":"Chullin","בכורות":"Bekhorot",
+  "ערכין":"Arakhin","תמורה":"Temurah","כריתות":"Keritot","מעילה":"Meilah",
+  "תמיד":"Tamid","מידות":"Middot","קינים":"Kinnim","כלים":"Kelim","אהלות":"Ohalot",
+  "נגעים":"Negaim","פרה":"Parah","טהרות":"Tahorot","מקואות":"Mikvaot","נידה":"Niddah",
+  "מכשירים":"Makhshirin","זבים":"Zavim","טבול יום":"Tevul_Yom","ידיים":"Yadayim","עוקצין":"Oktzin"
+};
+
+// ══════════════════════════════════════════════
+//  STATE & PERSISTENCE
+// ══════════════════════════════════════════════
+let state={progress:{},dailyRate:2,targetDate:null,calcMethod:'rate',theme:'dark',path:[]};
+// IndexedDB for text cache
+let db=null;
+
+function initDB(){
+  return new Promise((res,rej)=>{
+    const req=indexedDB.open('mishnaTexts',1);
+    req.onupgradeneeded=e=>{
+      const d=e.target.result;
+      if(!d.objectStoreNames.contains('texts'))d.createObjectStore('texts');
+    };
+    req.onsuccess=e=>{db=e.target.result;res()};
+    req.onerror=()=>rej();
+  });
+}
+async function dbGet(key){
+  if(!db)return null;
+  return new Promise(res=>{
+    const tx=db.transaction('texts','readonly');
+    const req=tx.objectStore('texts').get(key);
+    req.onsuccess=()=>res(req.result||null);
+    req.onerror=()=>res(null);
+  });
+}
+async function dbSet(key,val){
+  if(!db)return;
+  return new Promise(res=>{
+    const tx=db.transaction('texts','readwrite');
+    tx.objectStore('texts').put(val,key);
+    tx.oncomplete=res;tx.onerror=res;
+  });
+}
+async function dbCount(){
+  if(!db)return 0;
+  return new Promise(res=>{
+    const tx=db.transaction('texts','readonly');
+    const req=tx.objectStore('texts').count();
+    req.onsuccess=()=>res(req.result);
+    req.onerror=()=>res(0);
+  });
+}
+async function dbClear(){
+  if(!db)return;
+  return new Promise(res=>{
+    const tx=db.transaction('texts','readwrite');
+    tx.objectStore('texts').clear();
+    tx.oncomplete=res;
+  });
+}
+
+function saveState(){localStorage.setItem('mshv4',JSON.stringify(state));renderDash();}
+
+// ══════════════════════════════════════════════
+//  SEFARIA FETCH
+// ══════════════════════════════════════════════
+async function fetchMishna(masechet, chapter, mishna){
+  const key=`${masechet}-${chapter}-${mishna}`;
+  const cached=await dbGet(key);
+  if(cached)return cached;
+
+  const slug=SEFARIA_NAME[masechet];
+  if(!slug)return null;
+  const url=`https://www.sefaria.org/api/texts/Mishnah_${slug}.${chapter}.${mishna}?lang=he&context=0`;
+  try{
+    const res=await fetch(url);
+    if(!res.ok)return null;
+    const data=await res.json();
+    // he field: string or array
+    let text=Array.isArray(data.he)?data.he.join(' '):data.he;
+    if(!text)return null;
+    await dbSet(key,text);
+    return text;
+  }catch{return null;}
+}
+
+// Pre-fetch whole chapter in background
+async function prefetchChapter(masechet,chapter){
+  const cnt=getCnt(masechet,chapter);
+  for(let i=1;i<=cnt;i++){
+    const key=`${masechet}-${chapter}-${i}`;
+    const cached=await dbGet(key);
+    if(!cached)await fetchMishna(masechet,chapter,i);
+  }
+  renderStudy(); // refresh dots
+}
+
+// ══════════════════════════════════════════════
+//  PANEL STATE
+// ══════════════════════════════════════════════
+let panel={masechet:'',chapter:0,mishna:0,seder:''};
+
+async function openMishna(seder,masechet,chapter,mishna){
+  panel={seder,masechet,chapter,mishna};
+  updatePanelUI();
+  document.getElementById('text-panel').classList.add('open');
+  document.getElementById('overlay').classList.add('show');
+  await loadPanelText();
+  // prefetch rest of chapter in background
+  prefetchChapter(masechet,chapter);
+}
+
+function closePanel(){
+  document.getElementById('text-panel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+function updatePanelUI(){
+  const{seder,masechet,chapter,mishna}=panel;
+  document.getElementById('panel-title').textContent=`${masechet} ${HEB[chapter]||chapter}:${HEB[mishna]||mishna}`;
+  document.getElementById('panel-seder').textContent=seder;
+  document.getElementById('panel-masechet').textContent=masechet;
+  document.getElementById('panel-num').textContent=`משנה ${HEB[mishna]||mishna}`;
+  // mark button state
+  const mid=`${masechet}-${chapter}-${mishna}`;
+  const btn=document.getElementById('btn-mark-panel');
+  btn.textContent=state.progress[mid]?'✓ למדתי ✓':'✓ למדתי';
+  btn.classList.toggle('marked',!!state.progress[mid]);
+  // nav buttons
+  const cnt=getCnt(masechet,chapter);
+  document.getElementById('btn-prev').disabled=(chapter===1&&mishna===1);
+  document.getElementById('btn-next').disabled=(mishna===cnt && chapter===MS[seder][masechet].length);
+}
+
+async function loadPanelText(){
+  const body=document.getElementById('panel-body');
+  body.innerHTML=`<div class="mishna-text-loading"><div class="spinner"></div><span>טוען מ-Sefaria...</span></div>`;
+  const{masechet,chapter,mishna}=panel;
+  const text=await fetchMishna(masechet,chapter,mishna);
+  if(text){
+    body.innerHTML=`<div class="mishna-text">${text}</div>`;
+    // update cache dot on button
+    const mid=`${masechet}-${chapter}-${mishna}`;
+    const btn=document.querySelector(`.m-btn[data-mid="${mid}"]`);
+    if(btn)btn.classList.add('cached');
+    updateCacheCount();
+  } else {
+    body.innerHTML=`<div class="text-offline"><div class="big">📵</div>לא ניתן לטעון את הטקסט.<br>בדוק חיבור לאינטרנט.<br><br><small>לאחר טעינה ראשונה, הטקסט ישמר במכשירך.</small></div>`;
+  }
+}
+
+function markFromPanel(){
+  const{masechet,chapter,mishna}=panel;
+  const mid=`${masechet}-${chapter}-${mishna}`;
+  if(state.progress[mid]){delete state.progress[mid];}
+  else{state.progress[mid]=true;triggerConfetti();}
+  updatePanelUI();
+  saveState();
+  renderStudy();
+}
+
+async function panelNav(dir){
+  const{seder,masechet,chapter,mishna}=panel;
+  const cnt=getCnt(masechet,chapter);
+  const numChs=MS[seder][masechet].length;
+  let nc=chapter,nm=mishna+dir;
+  if(nm<1){
+    if(nc===1)return;
+    nc--;nm=getCnt(masechet,nc);
+  } else if(nm>cnt){
+    if(nc===numChs)return;
+    nc++;nm=1;
+  }
+  panel.chapter=nc;panel.mishna=nm;
+  updatePanelUI();
+  await loadPanelText();
+}
+
+// ══════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════
+function getCnt(m,c){for(const s in MS)if(MS[s][m])return MS[s][m][c-1]||0;return 0}
+function getSeder(m){for(const s in MS)if(MS[s][m])return s;return ''}
+function chDone(m,c){const cnt=getCnt(m,c),cid=`${m}-${c}`;for(let i=1;i<=cnt;i++)if(!state.progress[`${cid}-${i}`])return false;return cnt>0;}
+function chProg(m,c){const cnt=getCnt(m,c),cid=`${m}-${c}`;let d=0;for(let i=1;i<=cnt;i++)if(state.progress[`${cid}-${i}`])d++;return{d,t:cnt};}
+function mDone(s,m){return MS[s][m].every((_,i)=>chDone(m,i+1))}
+function sDone(s){return Object.keys(MS[s]).every(m=>mDone(s,m))}
+function sProg(s){let d=0,t=0;for(const m in MS[s]){const chs=MS[s][m].length;t+=chs;for(let c=1;c<=chs;c++)if(chDone(m,c))d++;}return{d,t}}
+function mChProg(m){let d=0,t=0;for(const s in MS)if(MS[s][m]){t=MS[s][m].length;for(let c=1;c<=t;c++)if(chDone(m,c))d++;}return{d,t}}
+function mMiProg(m){let d=0,t=0;for(const s in MS){if(!MS[s][m])continue;const chs=MS[s][m].length;for(let c=1;c<=chs;c++){const{d:cd,t:ct}=chProg(m,c);d+=cd;t+=ct;}}return{d,t}}
+function getStats(){
+  let totCh=0,doneCh=0;
+  for(const s in MS)for(const m in MS[s]){const chs=MS[s][m].length;totCh+=chs;for(let c=1;c<=chs;c++)if(chDone(m,c))doneCh++;}
+  const rem=totCh-doneCh;let rate=state.dailyRate,days=0,est=new Date();
+  if(state.calcMethod==='date'&&state.targetDate){
+    const tgt=new Date(state.targetDate);
+    days=Math.max(0,Math.ceil((tgt-new Date())/86400000));
+    rate=days>0?Math.ceil(rem/days):rem;
+  } else{days=rate>0?Math.ceil(rem/rate):0;est.setDate(est.getDate()+days);}
+  return{totCh,doneCh,rem,rate,days,est};
+}
+
+async function updateCacheCount(){
+  const n=await dbCount();
+  const el=document.getElementById('cache-count');
+  if(el)el.textContent=`${n} משניות שמורות`;
+}
+
+// ══════════════════════════════════════════════
+//  DASHBOARD
+// ══════════════════════════════════════════════
+function renderDash(){
+  const st=getStats();
+  const circ=2*Math.PI*46;
+  const pct=st.totCh>0?st.doneCh/st.totCh:0;
+  const fill=document.getElementById('ring-fill');
+  fill.style.strokeDasharray=circ;fill.style.strokeDashoffset=circ-pct*circ;
+  document.getElementById('pct').textContent=Math.round(pct*100)+'%';
+  document.getElementById('s-done').textContent=st.doneCh;
+  document.getElementById('s-left').textContent=st.rem;
+  document.getElementById('s-days').textContent=st.days;
+  const opts={month:'2-digit',day:'2-digit',year:'2-digit'};
+  const estDate=(state.calcMethod==='date'&&state.targetDate)?new Date(state.targetDate).toLocaleDateString('he-IL',opts):st.est.toLocaleDateString('he-IL',opts);
+  document.getElementById('s-date').textContent=`סיום: ${estDate}`;
+  const rate=state.calcMethod==='date'?st.rate:state.dailyRate;
+  document.getElementById('goal-badge').textContent=`${rate} פרקים`;
+  document.getElementById('goal-sub').textContent=`${st.days} ימים לסיום · ${st.rem} פרקים נותרו`;
+  const strip=document.getElementById('seder-strip');strip.innerHTML='';
+  const circ2=2*Math.PI*14;
+  for(const s in MS){
+    const{d,t}=sProg(s);const p=t>0?d/t:0;const offset=circ2-p*circ2;
+    const dot=document.createElement('div');dot.className='seder-dot';
+    dot.innerHTML=`<div class="seder-ring-mini"><svg width="38" height="38" viewBox="0 0 38 38"><circle cx="19" cy="19" r="14" stroke-width="4" fill="none" stroke="var(--border)"/><circle cx="19" cy="19" r="14" stroke-width="4" fill="none" stroke="${p===1?'var(--success)':'var(--accent)'}" stroke-dasharray="${circ2}" stroke-dashoffset="${offset}" stroke-linecap="round"/></svg><div class="s-center">${EMO[s]}</div></div><div class="seder-name">${s}</div>`;
+    dot.onclick=()=>{switchTab('study');state.path=[s];renderStudy();};
+    strip.appendChild(dot);
+  }
+  document.getElementById('rate-in').value=state.dailyRate;
+  document.getElementById('date-in').value=state.targetDate||'';
+  document.getElementById('calc-method').value=state.calcMethod;
+  toggleCalcMethod();
+  updateCacheCount();
+}
+
+// ══════════════════════════════════════════════
+//  STUDY VIEW
+// ══════════════════════════════════════════════
+function renderStudy(){
+  const cont=document.getElementById('study-content'),bc=document.getElementById('bc');
+  cont.innerHTML='';bc.innerHTML='';
+  const home=mk('span','bci','ראשי');home.onclick=()=>nav([]);bc.appendChild(home);
+  state.path.forEach((item,i)=>{
+    bc.appendChild(mk('span','bcs',' › '));
+    const c=mk('span','bci'+(i===state.path.length-1?' active':''),item);
+    c.onclick=()=>nav(state.path.slice(0,i+1));
+    bc.appendChild(c);
+  });
+  const d=state.path.length;
+
+  if(d===0){
+    const g=mk('div','grid');
+    for(const s in MS){
+      const done=sDone(s);const{d:pd,t:pt}=sProg(s);
+      const gi=mk('div','gi'+(done?' done':''));
+      const mb=mk('button','gi-mark','✓');mb.onclick=e=>{e.stopPropagation();markSeder(s)};
+      gi.innerHTML=`<div class="gi-emoji">${EMO[s]}</div><div class="gi-name">${s}</div><div class="gi-sub">${Object.keys(MS[s]).length} מסכתות · ${pd}/${pt} פרקים</div><div class="gi-bar-wrap"><div class="gi-bar" style="width:${pt>0?Math.round(pd/pt*100):0}%"></div></div>`;
+      gi.appendChild(mb);gi.addEventListener('click',()=>nav([s]));g.appendChild(gi);
+    }
+    cont.appendChild(g);
+
+  } else if(d===1){
+    const[s]=state.path;const g=mk('div','grid');
+    for(const m in MS[s]){
+      const done=mDone(s,m);const{d:pd,t:pt}=mChProg(m);const{d:md,t:mt}=mMiProg(m);
+      const gi=mk('div','gi'+(done?' done':''));
+      const mb=mk('button','gi-mark','✓');mb.onclick=e=>{e.stopPropagation();markMasechet(s,m)};
+      gi.innerHTML=`<div class="gi-name">${m}</div><div class="gi-sub">${pt} פרקים · ${md}/${mt} משניות</div><div class="gi-bar-wrap"><div class="gi-bar" style="width:${pt>0?Math.round(pd/pt*100):0}%"></div></div>`;
+      gi.appendChild(mb);gi.addEventListener('click',()=>nav([s,m]));g.appendChild(gi);
+    }
+    cont.appendChild(g);
+
+  } else if(d===2){
+    const[s,m]=state.path;const g=mk('div','grid');
+    MS[s][m].forEach((cnt,idx)=>{
+      const c=idx+1;const done=chDone(m,c);const{d:pd,t:pt}=chProg(m,c);
+      const gi=mk('div','gi'+(done?' done':''));
+      const mb=mk('button','gi-mark','✓');mb.onclick=e=>{e.stopPropagation();markChapter(m,c)};
+      gi.innerHTML=`<div class="gi-name">פרק ${HEB[c]||c}</div><div class="gi-sub">${pd}/${pt} משניות</div><div class="gi-bar-wrap"><div class="gi-bar" style="width:${pt>0?Math.round(pd/pt*100):0}%"></div></div>`;
+      gi.appendChild(mb);gi.addEventListener('click',()=>nav([s,m,c]));g.appendChild(gi);
+    });
+    cont.appendChild(g);
+
+  } else if(d===3){
+    const[s,m,c]=state.path;
+    const cid=`${m}-${c}`,cnt=getCnt(m,c);
+    const{d:pd}=chProg(m,c);
+    const hdr=mk('div','ch-header');
+    hdr.innerHTML=`<div><div class="ch-title">${m} — פרק ${HEB[c]||c}</div><div class="ch-prog">${pd} מתוך ${cnt} משניות</div></div>`;
+    const allBtn=mk('button','btn btn-sm btn-ghost','✅ סמן הכל');
+    allBtn.onclick=()=>markChapter(m,c);
+    hdr.appendChild(allBtn);
+    cont.appendChild(hdr);
+
+    // hint
+    const hint=mk('div','','');
+    hint.style.cssText='font-size:.72rem;color:var(--text-dim);margin-bottom:10px;text-align:center;';
+    hint.textContent='לחץ על מספר המשנה לקריאה • לחץ לחיצה ארוכה לסימון';
+    cont.appendChild(hint);
+
+    const g=mk('div','m-grid');
+    for(let i=1;i<=cnt;i++){
+      const mid=`${cid}-${i}`;
+      const b=mk('div','m-btn'+(state.progress[mid]?' on':''));
+      b.setAttribute('data-mid',mid);
+      b.innerHTML=`${HEB[i]||i}<div class="read-dot"></div>`;
+
+      // Check cache for dot
+      dbGet(mid).then(v=>{if(v)b.classList.add('cached')});
+
+      // Short press → open text; long press → toggle mark
+      let pressTimer;
+      b.addEventListener('pointerdown',()=>{
+        pressTimer=setTimeout(()=>{
+          pressTimer=null;
+          toggleMishna(mid,b);
+        },400);
+      });
+      b.addEventListener('pointerup',()=>{
+        if(pressTimer!==null){
+          clearTimeout(pressTimer);pressTimer=null;
+          openMishna(s,m,c,i);
+        }
+      });
+      b.addEventListener('pointerleave',()=>{clearTimeout(pressTimer);pressTimer=null;});
+      g.appendChild(b);
+    }
+    cont.appendChild(g);
+
+    // legend
+    const legend=mk('div','');
+    legend.style.cssText='display:flex;gap:16px;justify-content:center;margin-top:14px;font-size:.68rem;color:var(--text-dim);';
+    legend.innerHTML=`<span>🟡 = טקסט שמור</span><span style="color:var(--accent)">■</span><span>= נלמד</span>`;
+    cont.appendChild(legend);
+  }
+}
+
+function toggleMishna(mid,btn){
+  if(state.progress[mid])delete state.progress[mid];
+  else{state.progress[mid]=true;triggerConfetti();}
+  btn.className='m-btn'+(state.progress[mid]?' on':'');
+  if(btn.classList.contains('cached')||state.progress[mid])btn.classList.add('cached');
+  btn.classList.add('pop');setTimeout(()=>btn.classList.remove('pop'),250);
+  saveState();renderStudy();
+}
+
+function nav(p){state.path=p;renderStudy()}
+function mk(t,c,tx){const e=document.createElement(t);if(c)e.className=c;if(tx!==undefined)e.innerHTML=tx;return e}
+
+// ══════════════════════════════════════════════
+//  MARK ACTIONS
+// ══════════════════════════════════════════════
+function markChapter(m,c){
+  const cnt=getCnt(m,c),cid=`${m}-${c}`;
+  let all=true;for(let i=1;i<=cnt;i++)if(!state.progress[`${cid}-${i}`]){all=false;break}
+  for(let i=1;i<=cnt;i++){const k=`${cid}-${i}`;if(!all)state.progress[k]=true;else delete state.progress[k]}
+  if(!all)triggerConfetti();saveState();renderStudy();toast(all?'הסימון הוסר':'✅ פרק הושלם!');
+}
+function markMasechet(s,m){
+  const chs=MS[s][m].length;let all=true;
+  outer:for(let c=1;c<=chs;c++){const cnt=getCnt(m,c);for(let i=1;i<=cnt;i++)if(!state.progress[`${m}-${c}-${i}`]){all=false;break outer}}
+  for(let c=1;c<=chs;c++){const cnt=getCnt(m,c);for(let i=1;i<=cnt;i++){const k=`${m}-${c}-${i}`;if(!all)state.progress[k]=true;else delete state.progress[k]}}
+  if(!all)triggerConfetti();saveState();renderStudy();toast(all?'הסימון הוסר':`🎉 ${m} הושלמה!`);
+}
+function markSeder(s){
+  let all=true;
+  outer:for(const m in MS[s]){const chs=MS[s][m].length;for(let c=1;c<=chs;c++){const cnt=getCnt(m,c);for(let i=1;i<=cnt;i++)if(!state.progress[`${m}-${c}-${i}`]){all=false;break outer}}}
+  for(const m in MS[s]){const chs=MS[s][m].length;for(let c=1;c<=chs;c++){const cnt=getCnt(m,c);for(let i=1;i<=cnt;i++){const k=`${m}-${c}-${i}`;if(!all)state.progress[k]=true;else delete state.progress[k]}}}
+  if(!all)triggerConfetti();saveState();renderStudy();toast(all?'הסימון הוסר':`✨ ${s} הושלם!`);
+}
+
+// ══════════════════════════════════════════════
+//  TABS & SETTINGS
+// ══════════════════════════════════════════════
+function switchTab(id){
+  document.querySelectorAll('section').forEach(e=>e.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  document.querySelectorAll('.ni').forEach(e=>e.classList.remove('active'));
+  document.getElementById(`ni-${id}`)?.classList.add('active');
+  if(id==='study')renderStudy();
+  if(id==='dashboard')renderDash();
+  if(id==='settings')updateCacheCount();
+}
+function toggleCalcMethod(){
+  const v=document.getElementById('calc-method').value;
+  document.getElementById('rate-grp').classList.toggle('hidden',v!=='rate');
+  document.getElementById('date-grp').classList.toggle('hidden',v!=='date');
+}
+function saveSettings(){
+  state.calcMethod=document.getElementById('calc-method').value;
+  state.dailyRate=parseInt(document.getElementById('rate-in').value)||2;
+  state.targetDate=document.getElementById('date-in').value;
+  saveState();switchTab('dashboard');toast('✅ ההגדרות נשמרו');
+}
+function resetAll(){if(confirm('לאפס את כל ההתקדמות?')){state.progress={};saveState();location.reload();}}
+function exportData(){const a=document.createElement('a');a.href='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(state));a.download='mishna_backup.json';a.click();toast('📁 יוצא');}
+function importData(inp){const r=new FileReader();r.onload=e=>{try{state={...state,...JSON.parse(e.target.result)};saveState();toast('✅ נטען');setTimeout(()=>location.reload(),800)}catch{toast('❌ שגיאה')}};r.readAsText(inp.files[0]);}
+async function clearTextCache(){await dbClear();updateCacheCount();toast('🗑 המטמון נוקה');}
+
+// ══════════════════════════════════════════════
+//  THEME
+// ══════════════════════════════════════════════
+function toggleTheme(){state.theme=state.theme==='dark'?'light':'dark';applyTheme();saveState();}
+function applyTheme(){document.documentElement.setAttribute('data-theme',state.theme);const btn=document.getElementById('theme-btn');if(btn)btn.textContent=state.theme==='dark'?'☀️':'🌙';}
+
+// ══════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════
+let _tt;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('show'),2000);}
+
+// ══════════════════════════════════════════════
+//  CONFETTI
+// ══════════════════════════════════════════════
+function triggerConfetti(){
+  const cv=document.getElementById('confetti'),ctx=cv.getContext('2d');
+  cv.width=window.innerWidth;cv.height=window.innerHeight;
+  const cols=['#4fc3f7','#00e5c0','#f9a825','#26d982','#ff6b6b','#a78bfa'];
+  const ps=Array.from({length:45},()=>({x:Math.random()*cv.width,y:-10-Math.random()*50,vx:(Math.random()-.5)*3,vy:Math.random()*4+2,rot:Math.random()*360,dr:(Math.random()-.5)*7,s:Math.random()*7+3,col:cols[Math.floor(Math.random()*cols.length)],shape:Math.random()>.4?'rect':'circle'}));
+  let raf;
+  function draw(){ctx.clearRect(0,0,cv.width,cv.height);let alive=false;for(const p of ps){p.x+=p.vx;p.y+=p.vy;p.rot+=p.dr;if(p.y<cv.height+20)alive=true;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);ctx.fillStyle=p.col;if(p.shape==='rect')ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);else{ctx.beginPath();ctx.arc(0,0,p.s/2,0,Math.PI*2);ctx.fill();}ctx.restore();}if(alive)raf=requestAnimationFrame(draw);else ctx.clearRect(0,0,cv.width,cv.height);}
+  cancelAnimationFrame(raf);draw();
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+async function init(){
+  try{const s=localStorage.getItem('mshv4');if(s)state={...state,...JSON.parse(s)}}catch(e){}
+  await initDB().catch(()=>{});
+  applyTheme();
+  document.getElementById('date-in').min=new Date().toISOString().split('T')[0];
+  renderDash();
+  renderStudy();
+}
+
+init();
+</script>
+</body>
+</html>
